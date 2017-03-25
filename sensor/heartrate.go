@@ -1,4 +1,4 @@
-// package Sensor contains implementations of the various sensors that send
+// Package sensor contains implementations of the various sensors that send
 // data to the Sensor Hub.
 //
 // Currently, this consists of:
