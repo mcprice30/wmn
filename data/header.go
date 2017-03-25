@@ -1,24 +1,3 @@
-// Package data contains data types that are common across the project,
-// allowing easy access.
-//
-// It currently contains the following data types:
-//
-// SensorData: an interface for encapsulating data from various sensors,
-// and implementations for data from the toxic gas, heart rate, location,
-// and oxygen level sensors.
-//
-// SensorUnmarshaller: an interface for retrieving data from the raw bytes
-// that it will be sent across the network in, and implementations for data
-// from the toxic gas, heart rate, location, and oxygen level sensors.
-//
-// ByteUnmarshaller: ByteUnmarshaller delegates to various SensorUnmarshallers
-// to automatically decode bytes received from the network.
-//
-// PacketHeader: PacketHeader contains the information stored inside the header
-// of a packet sent over the network.
-//
-// Packet: Packet encapsulates the entirety of the packet to be sent across
-// the network.
 package data
 
 // MaxPacketBytes indicates the maximum number of bytes that can be sent in

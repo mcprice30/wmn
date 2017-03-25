@@ -1,19 +1,3 @@
-// Package sensor contains implementations of the various sensors that send
-// data to the Sensor Hub.
-//
-// Currently, this consists of:
-//
-// GasSensor:		Monitors the levels of toxic gas. Data is sent as data.GasData
-// packets, at an interval of 250ms.
-//
-// HeartRateSensor: Monitors the wearer's heart rate. Data is sent as
-// data.HeartRateData packets, at an interval of 1000ms.
-//
-// LocationSensor: Monitors the current location of the wearer. Data is sent
-// as data.LocationData packets, at an interval of 500ms.
-//
-// OxygenSensor: Monitors the oxygen level of the wearer's air-pack. Data is
-// sent as data.OxygenData packets, at an interval of 2000ms.
 package sensor
 
 import (
