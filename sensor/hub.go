@@ -6,20 +6,48 @@ import (
 	"os"
 
 	"github.com/mcprice30/wmn/data"
+	"github.com/mcprice30/wmn/transport"
 )
 
-// SensorHubListen is responsible for acting as the sensor hub, listening on
-// the given address for incoming data packets.
-//
-// Eventually, this will be responsible for building and sending data packets
-// to the Fire Chief.
-func SensorHubListen(address string) {
-	conn, err := createConnectionToSensor(address)
+// SensorHub represents the part of the codebase respsonsible for listening to
+// the various sensors, before building and sending data packets to the fire
+// chief.
+type SensorHub struct {
+	listenAddr string
+
+	transmitSrc data.ManetAddr
+	transmitDst data.ManetAddr
+
+	currPacketBytes int
+	currPacket      *data.DataPacket
+
+	rc *transport.ReliableSender
+}
+
+// CreateSensorHub will create a sensor hub that listens on the given address
+// for incoming sensor packets.
+func CreateSensorHub(listen string, src, dst data.ManetAddr) *SensorHub {
+	hub := &SensorHub{
+		listenAddr:      listen,
+		transmitSrc:     src,
+		transmitDst:     dst,
+		currPacketBytes: data.PacketHeaderBytes,
+	}
+	hub.currPacket = hub.newTransmitPacket()
+	return hub
+}
+
+// Listen will cause the given sensor hub to listen to incoming packets
+// building and sending data packets to the fire chief.
+func (hub *SensorHub) Listen() {
+	hub.rc = transport.CreateReliableSender(hub.transmitSrc, hub.transmitDst)
+	conn, err := createConnectionToSensor(hub.listenAddr)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		return
 	}
 	defer conn.Close()
-	readFromConnectionToSensor(conn)
+	hub.readFromConnectionToSensor(conn)
 }
 
 // createConnectionToSensor will attempt listen to data from sensors at the
@@ -41,13 +69,35 @@ func createConnectionToSensor(address string) (net.Conn, error) {
 
 // readFromConnectionToSensor will repeatedly listen to data sent by various
 // sensors.
-func readFromConnectionToSensor(conn net.Conn) {
+func (hub *SensorHub) readFromConnectionToSensor(conn net.Conn) {
 	for {
 		buffer := make([]byte, 64)
 		if n, err := conn.Read(buffer); err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot read data sent: %s\n", err)
 		} else {
-			fmt.Println(data.SensorDataFromBytes(buffer[:n]))
+			hub.addToTransmitPacket(data.SensorDataFromBytes(buffer[:n]))
 		}
+	}
+}
+
+func (hub *SensorHub) addToTransmitPacket(sd data.SensorData) {
+	if hub.currPacketBytes+sd.NumBytes() > data.MaxPacketBytes {
+		hub.rc.Transmit(hub.currPacket)
+		hub.currPacketBytes = data.PacketHeaderBytes
+		hub.currPacket = hub.newTransmitPacket()
+	} else {
+		hub.currPacketBytes += sd.NumBytes()
+		hub.currPacket.Body = append(hub.currPacket.Body, sd)
+	}
+}
+
+func (hub *SensorHub) newTransmitPacket() *data.DataPacket {
+	return &data.DataPacket{
+		Header: data.PacketHeader{
+			SourceAddress:      hub.transmitSrc,
+			DestinationAddress: hub.transmitDst,
+			PacketType:         data.PacketTypeData,
+		},
+		Body: []data.SensorData{},
 	}
 }

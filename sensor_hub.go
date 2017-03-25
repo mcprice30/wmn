@@ -9,7 +9,8 @@ import (
 func main() {
 
 	// Listen for data from the sensors.
-	go sensor.SensorHubListen("localhost:5001")
+	hub := sensor.CreateSensorHub("localhost:5001", 0x0001, 0x0002)
+	go hub.Listen()
 
 	// Launch each sensor in a separate goroutine (thread).
 	go sensor.Run(sensor.CreateHeartRateSensor(), "localhost:5002",

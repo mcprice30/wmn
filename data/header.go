@@ -1,8 +1,13 @@
 package data
 
+type ManetAddr uint16
+
 // MaxPacketBytes indicates the maximum number of bytes that can be sent in
 // a packet.
 const MaxPacketBytes = 128
+
+// MaxTTL is the largest possible value in the TTL field.
+const MaxTTL = 0x1F
 
 // PacketHeaderBytes indicates the number of bytes that a PacketHeader is
 // marshalled to.
@@ -25,15 +30,15 @@ const PacketTypeControl = 2
 type PacketHeader struct {
 	// SourceAddress is a value that uniquely identifies the source of the
 	// transmission.
-	SourceAddress uint16
+	SourceAddress ManetAddr
 
 	// Destination address is a value that uniquely identifies the intended
 	// destination of this transmission.
-	DestinationAddress uint16
+	DestinationAddress ManetAddr
 
 	// PreviousHop indicates is a value that uniquely identifies the node that
 	// we recieved this packet from.
-	PreviousHop uint16
+	PreviousHop ManetAddr
 
 	// TTL is the number of hops remaining on this packet before it is dropped,
 	// used to prevent an improperly routed packet from staying in the network
@@ -60,15 +65,15 @@ type PacketHeader struct {
 func (h *PacketHeader) ToBytes() []byte {
 	out := make([]byte, PacketHeaderBytes)
 	idx := 0
-	for _, b := range uint16ToBytes(h.SourceAddress) {
+	for _, b := range uint16ToBytes(uint16(h.SourceAddress)) {
 		out[idx] = b
 		idx++
 	}
-	for _, b := range uint16ToBytes(h.DestinationAddress) {
+	for _, b := range uint16ToBytes(uint16(h.DestinationAddress)) {
 		out[idx] = b
 		idx++
 	}
-	for _, b := range uint16ToBytes(h.PreviousHop) {
+	for _, b := range uint16ToBytes(uint16(h.PreviousHop)) {
 		out[idx] = b
 		idx++
 	}
@@ -86,9 +91,9 @@ func (h *PacketHeader) ToBytes() []byte {
 // header, after being received from the network.
 func PacketHeaderFromBytes(in []byte) *PacketHeader {
 	out := &PacketHeader{}
-	out.SourceAddress = bytesToUint16(in[0:2])
-	out.DestinationAddress = bytesToUint16(in[2:4])
-	out.PreviousHop = bytesToUint16(in[4:6])
+	out.SourceAddress = ManetAddr(bytesToUint16(in[0:2]))
+	out.DestinationAddress = ManetAddr(bytesToUint16(in[2:4]))
+	out.PreviousHop = ManetAddr(bytesToUint16(in[4:6]))
 	out.PacketType, out.TTL = splitTypeAndTTL(in[6])
 	out.SequenceNumber = bytesToUint16(in[7:9])
 	out.NumBytes = in[9]
