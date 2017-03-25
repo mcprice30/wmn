@@ -18,6 +18,8 @@ package sensor
 
 import (
 	"fmt"
+	"net"
+	"os"
 	"time"
 
 	"github.com/mcprice30/wmn/data"
@@ -38,11 +40,31 @@ type SensorStream interface {
 // Run will simulate a SensorStream sending data. It will generate a new data
 // point from the SensorStream and send it to the sensor hub, at an interval
 // dictated by the given SensorStream.
-func Run(s SensorStream) {
+func Run(s SensorStream, from, to string) {
+	srcAddr, err := net.ResolveUDPAddr("udp", from)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot resolve address (%s): %s\n", from, err)
+		return
+	}
+
+	dstAddr, err := net.ResolveUDPAddr("udp", to)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot resolve address (%s): %s\n", to, err)
+		return
+	}
+
+	conn, err := net.DialUDP("udp", srcAddr, dstAddr)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot dial address (%v): %s\n", to, err)
+		return
+	}
+
 	ticker := time.NewTicker(s.Interval())
 	for {
 		<-ticker.C
-		fmt.Println(s.GetData())
+		if _, err := conn.Write(s.GetData().ToBytes()); err != nil {
+			fmt.Fprintf(os.Stderr, "Error sending data to hub: %s\n", err)
+		}
 	}
 }
 

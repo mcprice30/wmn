@@ -47,3 +47,41 @@ type SensorUnmarshaller interface {
 	// to extract a SensorData object.
 	NumBytes() int
 }
+
+// ByteUnmarshaller is used to unmarshall recieved bytes into the appropriate
+// sensor data types.
+type ByteUnmarshaller struct {
+
+	// Separate instances for each type to be resolved to.
+	gasUnmarshaller       *GasUnmarshaller
+	heartRateUnmarshaller *HeartRateUnmarshaller
+	locationUnmarshaller  *LocationUnmarshaller
+	oxygenUnmarshaller    *OxygenUnmarshaller
+}
+
+// CreateByteUnmarshaller instantiates a new ByteUnmarshaller.
+func CreateByteUnmarshaller() *ByteUnmarshaller {
+	return &ByteUnmarshaller{
+		gasUnmarshaller:       &GasUnmarshaller{},
+		heartRateUnmarshaller: &HeartRateUnmarshaller{},
+		locationUnmarshaller:  &LocationUnmarshaller{},
+		oxygenUnmarshaller:    &OxygenUnmarshaller{},
+	}
+}
+
+// Unmarshall will attempt to unmarshall the given bytes to a SensorData
+// instance. If unsuccessful, it will return nil.
+func (u *ByteUnmarshaller) Unmarshal(in []byte) SensorData {
+	switch in[0] {
+	case GasDataType:
+		return u.gasUnmarshaller.FromBytes(in)
+	case HeartRateDataType:
+		return u.heartRateUnmarshaller.FromBytes(in)
+	case LocationDataType:
+		return u.locationUnmarshaller.FromBytes(in)
+	case OxygenDataType:
+		return u.oxygenUnmarshaller.FromBytes(in)
+	default:
+		return nil
+	}
+}
