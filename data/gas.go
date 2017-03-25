@@ -70,7 +70,7 @@ func (d *GasData) Type() byte {
 // String will return a string description of the toxic gas measurement, as
 // defined by fmt.Stringer.
 func (d *GasData) String() string {
-	return fmt.Sprintf("[%d]: %f", d.id, d.percentage)
+	return fmt.Sprintf("Gas [%d]: %f", d.id, d.percentage)
 }
 
 // NumBytes returns the number of bytes that a GasData object is marshalled to,
@@ -104,6 +104,6 @@ type GasUnmarshaller struct{}
 func (u *GasUnmarshaller) FromBytes(in []byte) SensorData {
 	return &GasData{
 		id:         in[1],
-		percentage: bytesToFloat64(in[2:]),
+		percentage: bytesToFloat64(in[2:GasDataSize]),
 	}
 }

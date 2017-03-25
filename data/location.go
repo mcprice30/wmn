@@ -74,7 +74,7 @@ func (d *LocationData) Type() byte {
 // String will return a string representation of the first responder's position,
 // as defined by fmt.Stringer.
 func (d *LocationData) String() string {
-	return fmt.Sprintf("[%d]: %f, %f", d.id, d.lat, d.lon)
+	return fmt.Sprintf("Location [%d]: %f, %f", d.id, d.lat, d.lon)
 }
 
 // NumBytes returns the number of bytes that a LocationData object is marshalled
@@ -113,6 +113,6 @@ func (u *LocationUnmarshaller) FromBytes(in []byte) SensorData {
 	return &LocationData{
 		id:  in[1],
 		lat: bytesToFloat64(in[2:10]),
-		lon: bytesToFloat64(in[10:]),
+		lon: bytesToFloat64(in[10:LocationDataSize]),
 	}
 }

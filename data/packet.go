@@ -103,6 +103,19 @@ func (h *PacketHeader) ToBytes() []byte {
 	return out
 }
 
+// PacketHeaderFromBytes will unmarshall the recieived bytes into a packet
+// header, after being received from the network.
+func PacketHeaderFromBytes(in []byte) *PacketHeader {
+	out := &PacketHeader{}
+	out.SourceAddress = bytesToUint16(in[0:2])
+	out.DestinationAddress = bytesToUint16(in[2:4])
+	out.PreviousHop = bytesToUint16(in[4:6])
+	out.PacketType, out.TTL = splitTypeAndTTL(in[6])
+	out.SequenceNumber = bytesToUint16(in[7:9])
+	out.NumBytes = in[9]
+	return out
+}
+
 // DataPacket encapsulates a packet containing actual data to be sent across
 // the network.
 type DataPacket struct {
@@ -144,4 +157,20 @@ func (p *DataPacket) ToBytes() []byte {
 	}
 
 	return out
+}
+
+func DataPacketFromBytes(in []byte) *DataPacket {
+	unmarshaller := &ByteUnmarshaller{}
+	header := *PacketHeaderFromBytes(in[:PacketHeaderBytes])
+	body := []SensorData{}
+	idx := PacketHeaderBytes
+	for idx < len(in) {
+		res := unmarshaller.Unmarshal(in[idx:])
+		idx += res.NumBytes()
+		body = append(body, res)
+	}
+	return &DataPacket{
+		Header: header,
+		Body:   body,
+	}
 }

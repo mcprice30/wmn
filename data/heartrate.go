@@ -70,7 +70,7 @@ func (d *HeartRateData) Type() byte {
 // String will return a string representation of the heart rate measurement, as
 // defined by fmt.Stringer.
 func (d *HeartRateData) String() string {
-	return fmt.Sprintf("[%d]: %f", d.id, d.heartRate)
+	return fmt.Sprintf("Heart Rate [%d]: %f", d.id, d.heartRate)
 }
 
 // NumBytes returns the number of bytes that a HeartRateData object is
@@ -104,6 +104,6 @@ type HeartRateUnmarshaller struct{}
 func (u *HeartRateUnmarshaller) FromBytes(in []byte) SensorData {
 	return &HeartRateData{
 		id:        in[1],
-		heartRate: bytesToFloat64(in[2:]),
+		heartRate: bytesToFloat64(in[2:HeartRateDataSize]),
 	}
 }

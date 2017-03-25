@@ -70,7 +70,7 @@ func (d *OxygenData) Type() byte {
 // String will return a string representation of the oxygen level measurement,
 // as defined by fmt.Stringer.
 func (d *OxygenData) String() string {
-	return fmt.Sprintf("[%d]: %f", d.id, d.percentage)
+	return fmt.Sprintf("Oxygen [%d]: %f", d.id, d.percentage)
 }
 
 // NumBytes returns the number of bytes that an OxygenData object is marshalled
@@ -104,6 +104,6 @@ type OxygenUnmarshaller struct{}
 func (u *OxygenUnmarshaller) FromBytes(in []byte) SensorData {
 	return &OxygenData{
 		id:         in[1],
-		percentage: bytesToFloat64(in[2:]),
+		percentage: bytesToFloat64(in[2:OxygenDataSize]),
 	}
 }

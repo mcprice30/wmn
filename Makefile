@@ -16,5 +16,8 @@ fmt:
 	go fmt $(PREFIX)/sensor
 	go fmt *.go
 
+test:
+	go test $(PREFIX)/data
+
 clean:
 	rm bin/*
