@@ -10,6 +10,15 @@
 // SensorUnmarshaller: an interface for retrieving data from the raw bytes
 // that it will be sent across the network in, and implementations for data
 // from the toxic gas, heart rate, location, and oxygen level sensors.
+//
+// ByteUnmarshaller: ByteUnmarshaller delegates to various SensorUnmarshallers
+// to automatically decode bytes received from the network.
+//
+// PacketHeader: PacketHeader contains the information stored inside the header
+// of a packet sent over the network.
+//
+// Packet: Packet encapsulates the entirety of the packet to be sent across
+// the network.
 package data
 
 import (
@@ -64,6 +73,12 @@ func (d *OxygenData) String() string {
 	return fmt.Sprintf("[%d]: %f", d.id, d.percentage)
 }
 
+// NumBytes returns the number of bytes that an OxygenData object is marshalled
+// to, as defined by SensorData.
+func (u *OxygenData) NumBytes() int {
+	return OxygenDataSize
+}
+
 // ToBytes will marshall this data point into a slice of bytes, which can be
 // transmitted across the network, as defined by SensorData.
 func (d *OxygenData) ToBytes() []byte {
@@ -91,10 +106,4 @@ func (u *OxygenUnmarshaller) FromBytes(in []byte) SensorData {
 		id:         in[1],
 		percentage: bytesToFloat64(in[2:]),
 	}
-}
-
-// NumBytes returns the number of bytes that an OxygenData object is marshalled
-// to, as defined by SensorUnmarshaller.
-func (u *OxygenUnmarshaller) NumBytes() int {
-	return OxygenDataSize
 }

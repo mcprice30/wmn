@@ -10,6 +10,15 @@
 // SensorUnmarshaller: an interface for retrieving data from the raw bytes
 // that it will be sent across the network in, and implementations for data
 // from the toxic gas, heart rate, location, and oxygen level sensors.
+//
+// ByteUnmarshaller: ByteUnmarshaller delegates to various SensorUnmarshallers
+// to automatically decode bytes received from the network.
+//
+// PacketHeader: PacketHeader contains the information stored inside the header
+// of a packet sent over the network.
+//
+// Packet: Packet encapsulates the entirety of the packet to be sent across
+// the network.
 package data
 
 import (
@@ -31,6 +40,9 @@ type SensorData interface {
 	// by <SensorName>Type constants in the package.
 	Type() byte
 
+	// NumBytes indicates how many bytes this data point will be marshalled to.
+	NumBytes() int
+
 	// ToBytes will marshall this data point into bytes in order to be put in a
 	// packet.
 	ToBytes() []byte
@@ -42,10 +54,6 @@ type SensorUnmarshaller interface {
 
 	// FromBytes will extract a SensorData point from the recieved bytes.
 	FromBytes([]byte) SensorData
-
-	// NumBytes indicates the number of bytes this SensorUnmarshaller must read
-	// to extract a SensorData object.
-	NumBytes() int
 }
 
 // ByteUnmarshaller is used to unmarshall recieved bytes into the appropriate

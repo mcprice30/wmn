@@ -2,7 +2,7 @@ PREFIX="github.com/mcprice30/wmn"
 
 .PHONY: sensor_hub all fmt packages
 
-all: fmt packages sensor_hub
+all: packages sensor_hub
 
 packages:
 	go build $(PREFIX)/data
