@@ -48,9 +48,9 @@ func (d *OxygenData) ToBytes() []byte {
 type OxygenUnmarshaller struct{}
 
 func (u *OxygenUnmarshaller) FromBytes(in []byte) SensorData {
-	return &HeartRateData{
-		id:        in[1],
-		heartRate: bytesToFloat64(in[2:]),
+	return &OxygenData{
+		id:         in[1],
+		percentage: bytesToFloat64(in[2:]),
 	}
 }
 
