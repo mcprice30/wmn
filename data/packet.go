@@ -76,6 +76,33 @@ type PacketHeader struct {
 	NumBytes uint8
 }
 
+// ToBytes will marshall the given packet header into bytes, to be sent across
+// the network.
+func (h *PacketHeader) ToBytes() []byte {
+	out := make([]byte, PacketHeaderBytes)
+	idx := 0
+	for _, b := range uint16ToBytes(h.SourceAddress) {
+		out[idx] = b
+		idx++
+	}
+	for _, b := range uint16ToBytes(h.DestinationAddress) {
+		out[idx] = b
+		idx++
+	}
+	for _, b := range uint16ToBytes(h.PreviousHop) {
+		out[idx] = b
+		idx++
+	}
+	out[idx] = combineTypeAndTTL(h.PacketType, h.TTL)
+	idx++
+	for _, b := range uint16ToBytes(h.SequenceNumber) {
+		out[idx] = b
+		idx++
+	}
+	out[idx] = h.NumBytes
+	return out
+}
+
 // DataPacket encapsulates a packet containing actual data to be sent across
 // the network.
 type DataPacket struct {
@@ -95,5 +122,26 @@ func (p *DataPacket) NumBytes() int {
 	for _, data := range p.Body {
 		out += data.NumBytes()
 	}
+	return out
+}
+
+// ToBytes will marshall the given data packet into bytes, to be sent across
+// the network.
+func (p *DataPacket) ToBytes() []byte {
+	p.Header.NumBytes = uint8(p.NumBytes())
+	out := make([]byte, p.NumBytes())
+	idx := 0
+	for _, b := range p.Header.ToBytes() {
+		out[idx] = b
+		idx++
+	}
+
+	for _, entry := range p.Body {
+		for _, b := range entry.ToBytes() {
+			out[idx] = b
+			idx++
+		}
+	}
+
 	return out
 }
