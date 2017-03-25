@@ -103,13 +103,9 @@ func (d *LocationData) ToBytes() []byte {
 	return out
 }
 
-// LocationUnmarshaller implements SensorUnmarshaller, and is used to umarshall
-// recieved bytes into a LocationData object.
-type LocationUnmarshaller struct{}
-
-// FromBytes takes hte given input bytes and returns a new LocationData object
-// made from the data stored in the bytes, as defined by SensorUnmarshaller.
-func (u *LocationUnmarshaller) FromBytes(in []byte) SensorData {
+// LocationDataFromBytes takes hte given input bytes and returns a new
+// LocationData object made from the data stored in the bytes.
+func LocationDataFromBytes(in []byte) SensorData {
 	return &LocationData{
 		id:  in[1],
 		lat: bytesToFloat64(in[2:10]),

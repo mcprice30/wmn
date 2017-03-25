@@ -95,13 +95,9 @@ func (d *OxygenData) ToBytes() []byte {
 	return out
 }
 
-// OxygenUnmarshaller implements SensorUnmarshaller, and is used to unmarshall
-// recieved bytes into an OxygenData object.
-type OxygenUnmarshaller struct{}
-
-// FromBytes takes the given input bytes and returns a new OxygenData object
-// made from the data stored in the bytes, as defined by SensorUnmarshaller.
-func (u *OxygenUnmarshaller) FromBytes(in []byte) SensorData {
+// OxygenDataFromBytes takes the given input bytes and returns a new
+// OxygenData object made from the data stored in the bytes.
+func OxygenDataFromBytes(in []byte) SensorData {
 	return &OxygenData{
 		id:         in[1],
 		percentage: bytesToFloat64(in[2:OxygenDataSize]),

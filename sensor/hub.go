@@ -42,14 +42,12 @@ func createConnectionToSensor(address string) (net.Conn, error) {
 // readFromConnectionToSensor will repeatedly listen to data sent by various
 // sensors.
 func readFromConnectionToSensor(conn net.Conn) {
-	unmarshaller := data.CreateByteUnmarshaller()
-
 	for {
 		buffer := make([]byte, 64)
 		if n, err := conn.Read(buffer); err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot read data sent: %s\n", err)
 		} else {
-			fmt.Println(unmarshaller.Unmarshal(buffer[:n]))
+			fmt.Println(data.SensorDataFromBytes(buffer[:n]))
 		}
 	}
 }

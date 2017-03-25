@@ -21,29 +21,19 @@
 // the network.
 package data
 
-import (
-	"fmt"
-)
-
-// SensorData defines the various types of data that can be obtained from
-// a sensor.
-type SensorData interface {
-
-	// SensorData inherits String() string from fmt.Stringer.
-	fmt.Stringer
-
-	// Id indicates the sequence ID of this element of data among all data points
-	// generated from this sensor.
-	Id() byte
-
-	// Type indicates what sensor this element of data came from, as defined
-	// by <SensorName>Type constants in the package.
-	Type() byte
-
-	// NumBytes indicates how many bytes this data point will be marshalled to.
-	NumBytes() int
-
-	// ToBytes will marshall this data point into bytes in order to be put in a
-	// packet.
-	ToBytes() []byte
+// SensorDataFromBytes will attempt to unmarshall the given bytes to a
+// SensorData instance. If unsuccessful, it will return nil.
+func SensorDataFromBytes (in []byte) SensorData {
+	switch in[0] {
+	case GasDataType:
+		return GasDataFromBytes(in)
+	case HeartRateDataType:
+		return HeartRateDataFromBytes(in)
+	case LocationDataType:
+		return LocationDataFromBytes(in)
+	case OxygenDataType:
+		return OxygenDataFromBytes(in)
+	default:
+		return nil
+	}
 }

@@ -99,9 +99,9 @@ func (d *HeartRateData) ToBytes() []byte {
 // unmarshall recieved bytes into a HeartRateData object.
 type HeartRateUnmarshaller struct{}
 
-// FromBytes takes the given input bytes and returns a new HeartRateData object
-// made from the data stored in the bytes, as defined by SensorUnmarshaller.
-func (u *HeartRateUnmarshaller) FromBytes(in []byte) SensorData {
+// HeartRateDataFromBytes takes the given input bytes and returns a new
+// HeartRateData object made from the data stored in the bytes.
+func HeartRateDataFromBytes(in []byte) SensorData {
 	return &HeartRateData{
 		id:        in[1],
 		heartRate: bytesToFloat64(in[2:HeartRateDataSize]),

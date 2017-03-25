@@ -95,13 +95,9 @@ func (d *GasData) ToBytes() []byte {
 	return out
 }
 
-// GasUnmarshaller implements SensorUnmarshaller, and is used to unmarshall
-// recieved bytes into a GasData object.
-type GasUnmarshaller struct{}
-
-// FromBytes takes the given input bytes and returns a new GasData object made
-// from the data stored in the bytes, as defined by SensorUnmarshaller.
-func (u *GasUnmarshaller) FromBytes(in []byte) SensorData {
+// GasDataFromBytes takes the given input bytes and returns a new GasData
+// object made from the data stored in the bytes.
+func GasDataFromBytes(in []byte) SensorData {
 	return &GasData{
 		id:         in[1],
 		percentage: bytesToFloat64(in[2:GasDataSize]),
