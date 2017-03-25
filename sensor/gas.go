@@ -1,12 +1,13 @@
 package sensor
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/mcprice30/wmn/data"
 )
+
+const GasSensorInterval = "250ms"
 
 type GasSensor struct {
 	interval time.Duration
@@ -14,15 +15,14 @@ type GasSensor struct {
 	id       byte
 }
 
-func CreateGasSensor(ms int) *GasSensor {
-	interval, err := time.ParseDuration(fmt.Sprintf("%dms", ms))
-	if err != nil {
-		panic(err)
-	}
+func CreateGasSensor() *GasSensor {
 	return &GasSensor{
-		interval: interval,
-		id:       0,
+		interval: intervalFromString(GasSensorInterval),
 	}
+}
+
+func (s *GasSensor) Interval() time.Duration {
+	return s.interval
 }
 
 func (s *GasSensor) GetData() data.SensorData {
@@ -33,20 +33,4 @@ func (s *GasSensor) GetData() data.SensorData {
 
 func (s *GasSensor) incId() {
 	s.id++
-}
-
-func (s *GasSensor) Wait() {
-	if s.ticker != nil {
-		<-s.ticker.C
-	} else {
-		panic("Cannot 'Wait()' until 'Start()' is called")
-	}
-}
-
-func (s *GasSensor) Start() {
-	s.id = 0
-	if s.ticker != nil {
-		s.ticker.Stop()
-	}
-	s.ticker = time.NewTicker(s.interval)
 }

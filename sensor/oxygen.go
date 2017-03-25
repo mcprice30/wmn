@@ -1,12 +1,13 @@
 package sensor
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/mcprice30/wmn/data"
 )
+
+const OxygenInterval = "2000ms"
 
 type OxygenSensor struct {
 	interval time.Duration
@@ -14,15 +15,14 @@ type OxygenSensor struct {
 	id       byte
 }
 
-func CreateOxygenSensor(ms int) *OxygenSensor {
-	interval, err := time.ParseDuration(fmt.Sprintf("%dms", ms))
-	if err != nil {
-		panic(err)
-	}
+func CreateOxygenSensor() *OxygenSensor {
 	return &OxygenSensor{
-		interval: interval,
-		id:       0,
+		interval: intervalFromString(OxygenInterval),
 	}
+}
+
+func (s *OxygenSensor) Interval() time.Duration {
+	return s.interval
 }
 
 func (s *OxygenSensor) GetData() data.SensorData {
@@ -33,20 +33,4 @@ func (s *OxygenSensor) GetData() data.SensorData {
 
 func (s *OxygenSensor) incId() {
 	s.id++
-}
-
-func (s *OxygenSensor) Wait() {
-	if s.ticker != nil {
-		<-s.ticker.C
-	} else {
-		panic("Cannot 'Wait()' until 'Start()' is called")
-	}
-}
-
-func (s *OxygenSensor) Start() {
-	s.id = 0
-	if s.ticker != nil {
-		s.ticker.Stop()
-	}
-	s.ticker = time.NewTicker(s.interval)
 }

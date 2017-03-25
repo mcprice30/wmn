@@ -1,12 +1,13 @@
 package sensor
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/mcprice30/wmn/data"
 )
+
+const LocationInterval = "500ms"
 
 type LocationSensor struct {
 	interval time.Duration
@@ -14,14 +15,9 @@ type LocationSensor struct {
 	id       byte
 }
 
-func CreateLocationSensor(ms int) *LocationSensor {
-	interval, err := time.ParseDuration(fmt.Sprintf("%dms", ms))
-	if err != nil {
-		panic(err)
-	}
+func CreateLocationSensor() *LocationSensor {
 	return &LocationSensor{
-		interval: interval,
-		id:       0,
+		interval: intervalFromString(LocationInterval),
 	}
 }
 
@@ -32,22 +28,10 @@ func (s *LocationSensor) GetData() data.SensorData {
 	return data.CreateLocationData(s.id, lat, lon)
 }
 
+func (s *LocationSensor) Interval() time.Duration {
+	return s.interval
+}
+
 func (s *LocationSensor) incId() {
 	s.id++
-}
-
-func (s *LocationSensor) Wait() {
-	if s.ticker != nil {
-		<-s.ticker.C
-	} else {
-		panic("Cannot 'Wait()' until 'Start()' is called")
-	}
-}
-
-func (s *LocationSensor) Start() {
-	s.id = 0
-	if s.ticker != nil {
-		s.ticker.Stop()
-	}
-	s.ticker = time.NewTicker(s.interval)
 }

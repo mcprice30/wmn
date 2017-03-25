@@ -9,13 +9,12 @@ import (
 )
 
 func main() {
-	sensors := map[string]sensor.Sensor{
-		"heartrate": sensor.CreateHeartRateSensor(1000),
-		"location":  sensor.CreateLocationSensor(500),
-		"oxygen":    sensor.CreateOxygenSensor(2000),
-		"gas":       sensor.CreateGasSensor(250),
+	streams := map[string]sensor.SensorStream{
+		"heartrate": sensor.CreateHeartRateSensor(),
+		"location":  sensor.CreateLocationSensor(),
+		"oxygen":    sensor.CreateOxygenSensor(),
+		"gas":       sensor.CreateGasSensor(),
 	}
 
-	s := sensor.CreateSender(sensors[os.Args[1]])
-	s.Run()
+	sensor.Run(streams[os.Args[1]])
 }
