@@ -9,3 +9,8 @@ all:
 stream:
 	go build -o bin/stream stream.go
 
+fmt:
+	go fmt $(PREFIX)/data
+	go fmt $(PREFIX)/sensor
+	go fmt *.go
+

@@ -8,19 +8,19 @@ const HeartRateDataType byte = 0
 const HeartRateDataSize byte = 10
 
 type HeartRateData struct {
-	id byte
+	id        byte
 	heartRate float64
 }
 
 func CreateHeartRateData(id byte, heartRate float64) *HeartRateData {
-	return &HeartRateData {
-		id: id,
+	return &HeartRateData{
+		id:        id,
 		heartRate: heartRate,
 	}
 }
 
 func (d *HeartRateData) Id() byte {
-	return d.id;
+	return d.id
 }
 
 func (d *HeartRateData) Type() byte {
@@ -45,11 +45,11 @@ func (d *HeartRateData) ToBytes() []byte {
 	return out
 }
 
-type HeartRateUnmarshaller struct {}
+type HeartRateUnmarshaller struct{}
 
 func (u *HeartRateUnmarshaller) FromBytes(in []byte) SensorData {
-	return &HeartRateData {
-		id: in[1],
+	return &HeartRateData{
+		id:        in[1],
 		heartRate: bytesToFloat64(in[2:]),
 	}
 }
@@ -57,4 +57,3 @@ func (u *HeartRateUnmarshaller) FromBytes(in []byte) SensorData {
 func (u *HeartRateUnmarshaller) NumBytes() int {
 	return int(HeartRateDataSize)
 }
-

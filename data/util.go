@@ -18,4 +18,3 @@ func bytesToFloat64(in []byte) float64 {
 	bits := ByteOrder.Uint64(in[2:])
 	return math.Float64frombits(bits)
 }
-

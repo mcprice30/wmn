@@ -9,7 +9,7 @@ type Sender struct {
 }
 
 func CreateSender(s Sensor) *Sender {
-	return &Sender {
+	return &Sender{
 		sensor: s,
 	}
 }

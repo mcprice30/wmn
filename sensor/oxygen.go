@@ -8,34 +8,34 @@ import (
 	"github.com/mcprice30/wmn/data"
 )
 
-type HeartRateSensor struct {
+type OxygenSensor struct {
 	interval time.Duration
 	ticker   *time.Ticker
 	id       byte
 }
 
-func CreateHeartRateSensor(ms int) *HeartRateSensor {
+func CreateOxygenSensor(ms int) *OxygenSensor {
 	interval, err := time.ParseDuration(fmt.Sprintf("%dms", ms))
 	if err != nil {
 		panic(err)
 	}
-	return &HeartRateSensor{
+	return &OxygenSensor{
 		interval: interval,
 		id:       0,
 	}
 }
 
-func (s *HeartRateSensor) GetData() data.SensorData {
-	hr := rand.Float64()*80.0 + 100.0
+func (s *OxygenSensor) GetData() data.SensorData {
+	pct := rand.Float64() * 100.0
 	defer s.incId()
-	return data.CreateHeartRateData(s.id, hr)
+	return data.CreateOxygenData(s.id, pct)
 }
 
-func (s *HeartRateSensor) incId() {
+func (s *OxygenSensor) incId() {
 	s.id++
 }
 
-func (s *HeartRateSensor) Wait() {
+func (s *OxygenSensor) Wait() {
 	if s.ticker != nil {
 		<-s.ticker.C
 	} else {
@@ -43,7 +43,7 @@ func (s *HeartRateSensor) Wait() {
 	}
 }
 
-func (s *HeartRateSensor) Start() {
+func (s *OxygenSensor) Start() {
 	s.id = 0
 	if s.ticker != nil {
 		s.ticker.Stop()

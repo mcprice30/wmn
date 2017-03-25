@@ -10,8 +10,8 @@ import (
 
 type LocationSensor struct {
 	interval time.Duration
-	ticker *time.Ticker
-	id byte
+	ticker   *time.Ticker
+	id       byte
 }
 
 func CreateLocationSensor(ms int) *LocationSensor {
@@ -19,15 +19,15 @@ func CreateLocationSensor(ms int) *LocationSensor {
 	if err != nil {
 		panic(err)
 	}
-	return &LocationSensor {
+	return &LocationSensor{
 		interval: interval,
-		id: 0,
+		id:       0,
 	}
 }
 
 func (s *LocationSensor) GetData() data.SensorData {
-	lat := rand.Float64() * 80.0 + 100.0
-	lon := rand.Float64() * 80.0 + 100.0
+	lat := rand.Float64()*80.0 + 100.0
+	lon := rand.Float64()*80.0 + 100.0
 	defer s.incId()
 	return data.CreateLocationData(s.id, lat, lon)
 }

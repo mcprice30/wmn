@@ -8,21 +8,21 @@ const LocationDataType byte = 1
 const LocationDataSize byte = 18
 
 type LocationData struct {
-	id byte
+	id  byte
 	lat float64
 	lon float64
 }
 
 func CreateLocationData(id byte, lat float64, lon float64) *LocationData {
-	return &LocationData {
-		id: id,
+	return &LocationData{
+		id:  id,
 		lat: lat,
 		lon: lon,
 	}
 }
 
 func (d *LocationData) Id() byte {
-	return d.id;
+	return d.id
 }
 
 func (d *LocationData) Type() byte {
@@ -51,11 +51,11 @@ func (d *LocationData) ToBytes() []byte {
 	return out
 }
 
-type LocationUnmarshaller struct {}
+type LocationUnmarshaller struct{}
 
 func (u *LocationUnmarshaller) FromBytes(in []byte) SensorData {
-	return &LocationData {
-		id: in[1],
+	return &LocationData{
+		id:  in[1],
 		lat: bytesToFloat64(in[2:10]),
 		lon: bytesToFloat64(in[10:]),
 	}
@@ -64,4 +64,3 @@ func (u *LocationUnmarshaller) FromBytes(in []byte) SensorData {
 func (u *LocationUnmarshaller) NumBytes() int {
 	return int(LocationDataSize)
 }
-

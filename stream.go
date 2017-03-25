@@ -9,9 +9,10 @@ import (
 )
 
 func main() {
-	sensors := map[string]sensor.Sensor {
+	sensors := map[string]sensor.Sensor{
 		"heartrate": sensor.CreateHeartRateSensor(1000),
-		"location": sensor.CreateLocationSensor(500),
+		"location":  sensor.CreateLocationSensor(500),
+		"oxygen":    sensor.CreateOxygenSensor(2000),
 	}
 
 	s := sensor.CreateSender(sensors[os.Args[1]])
