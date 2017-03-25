@@ -3,15 +3,17 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/mcprice30/wmn/sensor"
 )
 
 func main() {
-	fmt.Println(os.Args)
+	sensors := map[string]sensor.Sensor {
+		"heartrate": sensor.CreateHeartRateSensor(1000),
+		"location": sensor.CreateLocationSensor(500),
+	}
 
-	s := sensor.CreateSender(sensor.CreateHeartRateSensor(10))
+	s := sensor.CreateSender(sensors[os.Args[1]])
 	s.Run()
 }

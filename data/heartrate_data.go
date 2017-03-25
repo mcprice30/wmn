@@ -1,10 +1,7 @@
 package data
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
-	"math"
 )
 
 const HeartRateDataType byte = 0
@@ -36,14 +33,14 @@ func (d *HeartRateData) String() string {
 
 func (d *HeartRateData) ToBytes() []byte {
 	out := make([]byte, HeartRateDataSize)
-	out[0] = d.Type()
-	out[1] = d.Id()
-	buf := new(bytes.Buffer)
-	if err := binary.Write(buf, ByteOrder, d.heartRate); err != nil {
-		panic(err)
-	}
-	for i, b := range buf.Bytes() {
-		out[i+2] = b
+	idx := 0
+	out[idx] = d.Type()
+	idx++
+	out[idx] = d.Id()
+	idx++
+	for _, b := range float64ToBytes(d.heartRate) {
+		out[idx] = b
+		idx++
 	}
 	return out
 }
@@ -51,12 +48,9 @@ func (d *HeartRateData) ToBytes() []byte {
 type HeartRateUnmarshaller struct {}
 
 func (u *HeartRateUnmarshaller) FromBytes(in []byte) SensorData {
-	id := in[1]
-	bits := ByteOrder.Uint64(in[2:])
-	heartRate := math.Float64frombits(bits)
 	return &HeartRateData {
-		id: id,
-		heartRate: heartRate,
+		id: in[1],
+		heartRate: bytesToFloat64(in[2:]),
 	}
 }
 
