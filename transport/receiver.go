@@ -11,7 +11,7 @@ import (
 const maxBufferSize = 64
 
 type ReliableReceiver struct {
-	conn            *network.ReceiverConnection
+	conn            network.Connection
 	buffer          map[uint16]*data.DataPacket
 	bufferLock      *sync.Mutex
 	nextSequenceNum uint16
@@ -19,7 +19,10 @@ type ReliableReceiver struct {
 }
 
 func CreateReliableReceiver(address data.ManetAddr) *ReliableReceiver {
-	conn := network.Listen(address)
+	// SWITCHED TO MANET
+	conn := network.BindManet()
+	conn.SetNeighbors([]data.ManetAddr{0x0003})
+	// END SWITCHED TO MANET
 	out := &ReliableReceiver{
 		conn:            conn,
 		buffer:          map[uint16]*data.DataPacket{},
@@ -41,10 +44,10 @@ func (rr *ReliableReceiver) Close() {
 
 func (rr *ReliableReceiver) runListen() {
 	for {
-		bytes, returnAddr := rr.conn.Receive()
+		bytes := rr.conn.Receive()
 		packet := data.DataPacketFromBytes(bytes)
 		ackPacket := createAck(packet)
-		rr.conn.Reply(ackPacket.ToBytes(), returnAddr)
+		rr.conn.Send(ackPacket.ToBytes())
 		rr.bufferPacket(packet)
 	}
 }
@@ -72,9 +75,11 @@ func createAck(packet *data.DataPacket) *data.DataPacket {
 		Header: data.PacketHeader{
 			SourceAddress:      packet.Header.DestinationAddress,
 			DestinationAddress: packet.Header.SourceAddress,
+			PreviousHop:        network.GetMyAddress(),
 			PacketType:         data.PacketTypeAck,
 			SequenceNumber:     packet.Header.SequenceNumber,
 			TTL:                data.MaxTTL,
+			SendKey:            packet.Header.SendKey ^ 0x8000,
 		},
 		Body: []data.SensorData{},
 	}

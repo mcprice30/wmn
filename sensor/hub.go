@@ -40,7 +40,7 @@ func CreateSensorHub(listen string, src, dst data.ManetAddr) *SensorHub {
 // Listen will cause the given sensor hub to listen to incoming packets
 // building and sending data packets to the fire chief.
 func (hub *SensorHub) Listen() {
-	hub.rc = transport.CreateReliableSender(hub.transmitSrc, hub.transmitDst)
+	hub.rc = transport.CreateReliableSender(hub.transmitSrc)
 	conn, err := createConnectionToSensor(hub.listenAddr)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

@@ -11,7 +11,7 @@ const MaxTTL = 0x1F
 
 // PacketHeaderBytes indicates the number of bytes that a PacketHeader is
 // marshalled to.
-const PacketHeaderBytes = 10
+const PacketHeaderBytes = 12
 
 // PacketTypeData indicates that the given packet actually contains data that
 // is being transmitted across the network.
@@ -58,6 +58,8 @@ type PacketHeader struct {
 
 	// NumBytes indicates the total size of the packet (including the header).
 	NumBytes uint8
+
+	SendKey uint16
 }
 
 // ToBytes will marshall the given packet header into bytes, to be sent across
@@ -84,6 +86,11 @@ func (h *PacketHeader) ToBytes() []byte {
 		idx++
 	}
 	out[idx] = h.NumBytes
+	idx++
+	for _, b := range uint16ToBytes(h.SendKey) {
+		out[idx] = b
+		idx++
+	}
 	return out
 }
 
@@ -97,5 +104,6 @@ func PacketHeaderFromBytes(in []byte) *PacketHeader {
 	out.PacketType, out.TTL = splitTypeAndTTL(in[6])
 	out.SequenceNumber = bytesToUint16(in[7:9])
 	out.NumBytes = in[9]
+	out.SendKey = bytesToUint16(in[10:12])
 	return out
 }

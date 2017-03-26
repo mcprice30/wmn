@@ -3,16 +3,19 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/mcprice30/wmn/data"
 	"github.com/mcprice30/wmn/network"
-	"github.com/mcprice30/wmn/transport"
 )
 
 func main() {
 
-	network.SetMyAddress(0x0002)
-	go transport.RunEcho(0x0002)
-
+	network.SetMyAddress(0x0003)
+	conn := network.BindManet()
+	conn.SetNeighbors([]data.ManetAddr{0x0001, 0x0002})
 	// Spin forever.
 	for {
+		fmt.Println(conn.Receive())
 	}
 }

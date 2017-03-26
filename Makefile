@@ -1,8 +1,8 @@
 PREFIX="github.com/mcprice30/wmn"
 
-.PHONY: sensor_hub all fmt packages display_hub
+.PHONY: sensor_hub all fmt packages display_hub manet_node
 
-all: packages sensor_hub display_hub
+all: packages sensor_hub display_hub manet_node
 
 packages:
 	go build $(PREFIX)/data
@@ -15,6 +15,9 @@ sensor_hub:
 
 display_hub:
 	go build -o bin/display_hub display_hub.go
+
+manet_node:
+	go build -o bin/manet_node manet_node.go
 
 fmt:
 	go fmt $(PREFIX)/data

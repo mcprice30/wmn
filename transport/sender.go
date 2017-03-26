@@ -12,15 +12,18 @@ import (
 const resendDelay = "25ms"
 
 type ReliableSender struct {
-	conn               *network.SenderConnection
+	conn               network.Connection
 	seqNum             uint16
 	outstandingPackets map[uint16]bool
 	bufferLock         *sync.Mutex
 	interval           time.Duration
 }
 
-func CreateReliableSender(src, dst data.ManetAddr) *ReliableSender {
-	conn := network.Connect(src, dst)
+func CreateReliableSender(src data.ManetAddr) *ReliableSender {
+	// SWITCHED TO MANET!
+	conn := network.BindManet()
+	conn.SetNeighbors([]data.ManetAddr{0x0003})
+	// END SWITCHED TO MANET!
 	duration, err := time.ParseDuration(resendDelay)
 	if err != nil {
 		panic(err)
@@ -38,6 +41,7 @@ func CreateReliableSender(src, dst data.ManetAddr) *ReliableSender {
 func (rc *ReliableSender) Transmit(packet *data.DataPacket) {
 	packet.Header.SequenceNumber = rc.seqNum
 	packet.Header.TTL = data.MaxTTL
+	packet.Header.PreviousHop = network.GetMyAddress()
 	go rc.sendBytes(packet.ToBytes(), rc.seqNum)
 	rc.seqNum++
 }
@@ -52,20 +56,25 @@ func (rc *ReliableSender) listenForAck() {
 	}
 }
 
-func (rc *ReliableSender) sendBytes(data []byte, seqNum uint16) {
+func (rc *ReliableSender) sendBytes(bytes []byte, seqNum uint16) {
 	rc.bufferLock.Lock()
 	rc.outstandingPackets[seqNum] = true
 	rc.bufferLock.Unlock()
 	fmt.Printf("Transmitting packet #%d\n", seqNum)
 	t := time.NewTicker(rc.interval)
-	rc.conn.Send(data)
+	rc.conn.Send(bytes)
 	for {
 		<-t.C
 		rc.bufferLock.Lock()
 		if _, outstanding := rc.outstandingPackets[seqNum]; outstanding {
 			rc.bufferLock.Unlock()
 			fmt.Printf("Re-transmitting packet #%d\n", seqNum)
-			rc.conn.Send(data)
+			header := data.PacketHeaderFromBytes(bytes)
+			header.SendKey = header.SendKey + 1
+			for i, b := range header.ToBytes() {
+				bytes[i] = b
+			}
+			rc.conn.Send(bytes)
 		} else {
 			rc.bufferLock.Unlock()
 			t.Stop()
