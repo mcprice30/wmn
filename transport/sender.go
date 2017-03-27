@@ -68,7 +68,6 @@ func (rc *ReliableSender) sendBytes(bytes []byte, seqNum uint16) {
 		rc.bufferLock.Lock()
 		if _, outstanding := rc.outstandingPackets[seqNum]; outstanding {
 			rc.bufferLock.Unlock()
-			fmt.Printf("Re-transmitting packet #%d\n", seqNum)
 			header := data.PacketHeaderFromBytes(bytes)
 			header.SendKey = header.SendKey + 1
 			for i, b := range header.ToBytes() {

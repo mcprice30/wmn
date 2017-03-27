@@ -1,7 +1,7 @@
 package network
 
 import (
-	"fmt"
+	//"fmt"
 	"math/rand"
 	"net"
 
@@ -14,7 +14,7 @@ type ManetConnection struct {
 	laddr     data.ManetAddr
 	conn      *net.UDPConn
 	neighbors []data.ManetAddr
-	cache     map[uint16]map[uint16]bool
+	cache     map[uint16]uint16
 }
 
 func BindManet() *ManetConnection {
@@ -28,7 +28,7 @@ func BindManet() *ManetConnection {
 		laddr:     GetMyAddress(),
 		conn:      conn,
 		neighbors: []data.ManetAddr{},
-		cache:     map[uint16]map[uint16]bool{},
+		cache:     map[uint16]uint16{},
 	}
 }
 
@@ -38,7 +38,7 @@ func (c *ManetConnection) SetNeighbors(neighbors []data.ManetAddr) {
 
 func (c *ManetConnection) Send(bytes []byte) {
 	if rand.Float64() < dropChance {
-		fmt.Println("Gremlin!")
+		//fmt.Println("Gremlin!")
 		return
 	}
 	for _, neighbor := range c.neighbors {
@@ -65,24 +65,21 @@ func (c *ManetConnection) Receive() []byte {
 	}
 }
 
+func (c *ManetConnection) inCache(seq, sendKey uint16) bool {
+	return (c.cache[seq] == sendKey) || c.cache[seq] == (sendKey|0x8000)
+}
+
 func (c *ManetConnection) forward(bytes []byte) {
 	incomingHeader := data.PacketHeaderFromBytes(bytes)
 
-	inCache := false
-	if seqCache, exists := c.cache[incomingHeader.SequenceNumber]; exists {
-		_, inCache = seqCache[incomingHeader.SendKey]
-	} else {
-		c.cache[incomingHeader.SequenceNumber] = map[uint16]bool{}
-	}
+	cached := c.inCache(incomingHeader.SequenceNumber, incomingHeader.SendKey)
 
-	if inCache || incomingHeader.TTL <= 1 {
+	if cached || incomingHeader.TTL <= 1 {
 		return
 	}
 
-	c.cache[incomingHeader.SequenceNumber][incomingHeader.SendKey] = true
+	c.cache[incomingHeader.SequenceNumber] = incomingHeader.SendKey
 	delete(c.cache, incomingHeader.SequenceNumber-cacheDepth)
-	delete(c.cache[incomingHeader.SequenceNumber],
-		incomingHeader.SendKey-cacheDepth)
 
 	outgoingHeader := &data.PacketHeader{
 		SourceAddress:      incomingHeader.SourceAddress,
