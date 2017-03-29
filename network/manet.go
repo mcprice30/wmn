@@ -10,6 +10,7 @@ import (
 
 const cacheDepth = 32
 
+// ManetConnection implements a connection over the Manet.
 type ManetConnection struct {
 	laddr     data.ManetAddr
 	conn      *net.UDPConn
@@ -17,6 +18,8 @@ type ManetConnection struct {
 	cache     map[uint16]uint16
 }
 
+// BindManet will instantiate a connection to the manet on the address specified
+// by this process's local address, as determined by SetMyAddress.
 func BindManet() *ManetConnection {
 	addr := ToUDPAddr(GetMyAddress())
 	conn, err := net.ListenUDP("udp", addr)
@@ -32,10 +35,14 @@ func BindManet() *ManetConnection {
 	}
 }
 
+// SetNeighbors will update all the neighbors of the given simulated manet node
+// to be the set of neighbors with the given addresses.
 func (c *ManetConnection) SetNeighbors(neighbors []data.ManetAddr) {
 	c.neighbors = neighbors
 }
 
+// Send will attempt to transmit the given packet bytes over the manet, as
+// specified by the Connection interface.
 func (c *ManetConnection) Send(bytes []byte) {
 	if rand.Float64() < dropChance {
 		//fmt.Println("Gremlin!")
@@ -49,6 +56,8 @@ func (c *ManetConnection) Send(bytes []byte) {
 	}
 }
 
+// Recieve will attempt to recieve packets on the address this connection
+// was set up on, as specified by the Connection interface.
 func (c *ManetConnection) Receive() []byte {
 	for {
 		buffer := make([]byte, data.MaxPacketBytes)
@@ -65,10 +74,13 @@ func (c *ManetConnection) Receive() []byte {
 	}
 }
 
+// inCache returns true iff the given sequence number and send key have already
+// been transmitted by this device.
 func (c *ManetConnection) inCache(seq, sendKey uint16) bool {
 	return (c.cache[seq] == sendKey) || c.cache[seq] == (sendKey|0x8000)
 }
 
+// forward will forward the given packet to all neighboring manet nodes.
 func (c *ManetConnection) forward(bytes []byte) {
 	incomingHeader := data.PacketHeaderFromBytes(bytes)
 
@@ -106,6 +118,7 @@ func (c *ManetConnection) forward(bytes []byte) {
 	}
 }
 
+// Close will close the connection, as specified in the Connection interface.
 func (c *ManetConnection) Close() {
 	c.conn.Close()
 }

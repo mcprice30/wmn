@@ -1,7 +1,6 @@
 package transport
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/mcprice30/wmn/data"
@@ -10,6 +9,8 @@ import (
 
 const maxBufferSize = 64
 
+// ReliableReciever is used to listen reliably to packets on the given
+// connection.
 type ReliableReceiver struct {
 	conn            network.Connection
 	buffer          map[uint16]*data.DataPacket
@@ -18,6 +19,8 @@ type ReliableReceiver struct {
 	receivedChan    chan *data.DataPacket
 }
 
+// CreateReliableReceiver will instantiate a new reliable receiver listening and
+// transmitting the given manet address.
 func CreateReliableReceiver(address data.ManetAddr) *ReliableReceiver {
 	// SWITCHED TO MANET
 	conn := network.BindManet()
@@ -34,14 +37,19 @@ func CreateReliableReceiver(address data.ManetAddr) *ReliableReceiver {
 	return out
 }
 
+// Listen will block until the next packet is received, and then return that
+// packet.
 func (rr *ReliableReceiver) Listen() *data.DataPacket {
 	return <-rr.receivedChan
 }
 
+// Close will close the connection, once transmission is done.
 func (rr *ReliableReceiver) Close() {
 	rr.conn.Close()
 }
 
+// runListen will listen on the given address, sending acknowledgements and
+// buffering all recieved packets.
 func (rr *ReliableReceiver) runListen() {
 	for {
 		bytes := rr.conn.Receive()
@@ -52,6 +60,8 @@ func (rr *ReliableReceiver) runListen() {
 	}
 }
 
+// bufferPacket will store a packet in the buffer, ensuring packets are
+// returned in the proper order, relative to their sequence numbers.
 func (rr *ReliableReceiver) bufferPacket(packet *data.DataPacket) {
 	rr.bufferLock.Lock()
 	defer rr.bufferLock.Unlock()
@@ -70,6 +80,8 @@ func (rr *ReliableReceiver) bufferPacket(packet *data.DataPacket) {
 	}
 }
 
+// createAck will create a data packet that serves as an acknowledgement of the
+// for the received packet.
 func createAck(packet *data.DataPacket) *data.DataPacket {
 	return &data.DataPacket{
 		Header: data.PacketHeader{
@@ -79,19 +91,8 @@ func createAck(packet *data.DataPacket) *data.DataPacket {
 			PacketType:         data.PacketTypeAck,
 			SequenceNumber:     packet.Header.SequenceNumber,
 			TTL:                data.MaxTTL,
-			SendKey:            packet.Header.SendKey ^ 0x8000,
+			SendKey:            packet.Header.SendKey | 0x8000,
 		},
 		Body: []data.SensorData{},
-	}
-}
-
-func RunEcho(address data.ManetAddr) {
-	rec := CreateReliableReceiver(address)
-
-	defer rec.Close()
-
-	for {
-		data := rec.Listen()
-		fmt.Println("GOT: ", data.Header.SequenceNumber)
 	}
 }

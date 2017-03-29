@@ -9,8 +9,11 @@ import (
 	"github.com/mcprice30/wmn/network"
 )
 
+// resendDelay is the delay between resending packets.
 const resendDelay = "25ms"
 
+// ReliableSender will send packets with to a ReliableReceiver. It will continue
+// sending each packet until it receives an acknowledgement.
 type ReliableSender struct {
 	conn               network.Connection
 	seqNum             uint16
@@ -19,6 +22,8 @@ type ReliableSender struct {
 	interval           time.Duration
 }
 
+// CreateReliableSender will create a new instance of a reliable sender
+// that sends data from the given manet address.
 func CreateReliableSender(src data.ManetAddr) *ReliableSender {
 	// SWITCHED TO MANET!
 	conn := network.BindManet()
@@ -38,6 +43,7 @@ func CreateReliableSender(src data.ManetAddr) *ReliableSender {
 	return out
 }
 
+// Transmit will reliably transmit a data packet across the network.
 func (rc *ReliableSender) Transmit(packet *data.DataPacket) {
 	packet.Header.SequenceNumber = rc.seqNum
 	packet.Header.TTL = data.MaxTTL
@@ -46,6 +52,8 @@ func (rc *ReliableSender) Transmit(packet *data.DataPacket) {
 	rc.seqNum++
 }
 
+// listenForAck will run in the background and listen for acknowledgments for
+// all outstanding packets.
 func (rc *ReliableSender) listenForAck() {
 	for {
 		ack := data.DataPacketFromBytes(rc.conn.Receive())
@@ -56,6 +64,8 @@ func (rc *ReliableSender) listenForAck() {
 	}
 }
 
+// sendBytes will repeatedly transmit the given bytes, until an acknowledgement
+// is received for the given sequence number.
 func (rc *ReliableSender) sendBytes(bytes []byte, seqNum uint16) {
 	rc.bufferLock.Lock()
 	rc.outstandingPackets[seqNum] = true

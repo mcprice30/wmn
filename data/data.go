@@ -25,6 +25,8 @@ import (
 	"fmt"
 )
 
+const NumSensorTypes = 4
+
 // SensorData defines the various types of data that can be obtained from
 // a sensor.
 type SensorData interface {
