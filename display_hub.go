@@ -3,12 +3,12 @@
 package main
 
 import (
-	"github.com/mcprice30/wmn/network"
 	"github.com/mcprice30/wmn/chief"
+	"github.com/mcprice30/wmn/config"
 )
 
 func main() {
 
-	network.SetMyAddress(0x0002)
-	chief.RunListener(0x0002)
+	config.LoadConfig("config_test.txt", "Display")
+	chief.RunListener()
 }

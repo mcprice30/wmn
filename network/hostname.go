@@ -7,23 +7,17 @@ import (
 )
 
 // cache contains a mapping of ManetAddresses to actual addresses.
-var cache = map[data.ManetAddr]string{
-	0x0001: "localhost:5009", // "Sensor Hub" (transmission only)
-	0x0002: "localhost:5010", // "Display Hub"
-	0x0003: "localhost:5011", // "Manet Node 1"
-}
+var cache = map[data.ManetAddr]string{}
 
-// myAddress indicates which manet address belongs to this device.
-var myAddress data.ManetAddr = 0
+// dsn contains a mapping of manet host names to their address.
+var dns = map[string]data.ManetAddr{}
 
-// SetMyAddress will set whatever address this device owns.
-func SetMyAddress(in data.ManetAddr) {
-	myAddress = in
-}
+// myHostname indicates what name in the manet this node is.
+var myHostname string = ""
 
 // GetMyAddress will return the address that this device has been assigned.
 func GetMyAddress() data.ManetAddr {
-	return myAddress
+	return dns[myHostname]
 }
 
 // ToUDPAddr will convert a manet address to a udp address, to be used for
@@ -40,4 +34,14 @@ func ToUDPAddr(addr data.ManetAddr) *net.UDPAddr {
 // 'tux054:10010'
 func SetAddress(addr data.ManetAddr, location string) {
 	cache[addr] = location
+}
+
+// SetHostname will map the given hostname to the appropriate manet address.
+func SetHostname(hostname string, addr data.ManetAddr) {
+	dns[hostname] = addr
+}
+
+// SetMyHostname will remember what this device's hostname is.
+func SetMyHostname(in string) {
+	myHostname = in
 }

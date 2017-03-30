@@ -8,10 +8,10 @@ import (
 	"github.com/mcprice30/wmn/transport"
 )
 
-// RunListener will listen for incoming packets on the incoming manet address.
+// RunListener will listen for incoming packets on our local address.
 // It will print out the buffers of the packets recieved.
-func RunListener(address data.ManetAddr) {
-	rec := transport.CreateReliableReceiver(address)
+func RunListener() {
+	rec := transport.CreateReliableReceiver()
 	defer rec.Close()
 
 	buffers := make([]*data.Buffer, data.NumSensorTypes)
@@ -21,7 +21,6 @@ func RunListener(address data.ManetAddr) {
 
 	for {
 		data := rec.Listen()
-		fmt.Println("GOT: ", data.Header.SequenceNumber)
 		for _, d := range data.Body {
 			buffers[d.Type()].Add(d)
 		}

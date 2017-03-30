@@ -1,7 +1,6 @@
 package network
 
 import (
-	//"fmt"
 	"math/rand"
 	"net"
 
@@ -10,11 +9,12 @@ import (
 
 const cacheDepth = 32
 
+var myNeighbors map[data.ManetAddr]float64 = map[data.ManetAddr]float64{}
+
 // ManetConnection implements a connection over the Manet.
 type ManetConnection struct {
 	laddr     data.ManetAddr
 	conn      *net.UDPConn
-	neighbors []data.ManetAddr
 	cache     map[uint16]uint16
 }
 
@@ -30,15 +30,14 @@ func BindManet() *ManetConnection {
 	return &ManetConnection{
 		laddr:     GetMyAddress(),
 		conn:      conn,
-		neighbors: []data.ManetAddr{},
 		cache:     map[uint16]uint16{},
 	}
 }
 
 // SetNeighbors will update all the neighbors of the given simulated manet node
 // to be the set of neighbors with the given addresses.
-func (c *ManetConnection) SetNeighbors(neighbors []data.ManetAddr) {
-	c.neighbors = neighbors
+func SetNeighbors(neighbors map[data.ManetAddr]float64) {
+	myNeighbors = neighbors
 }
 
 // Send will attempt to transmit the given packet bytes over the manet, as
@@ -48,7 +47,7 @@ func (c *ManetConnection) Send(bytes []byte) {
 		//fmt.Println("Gremlin!")
 		return
 	}
-	for _, neighbor := range c.neighbors {
+	for neighbor := range myNeighbors {
 		raddr := ToUDPAddr(neighbor)
 		if _, err := c.conn.WriteToUDP(bytes, raddr); err != nil {
 			panic(err)
@@ -107,7 +106,7 @@ func (c *ManetConnection) forward(bytes []byte) {
 		bytes[i] = b
 	}
 
-	for _, neighbor := range c.neighbors {
+	for neighbor := range myNeighbors {
 		if neighbor == incomingHeader.PreviousHop {
 			continue
 		}

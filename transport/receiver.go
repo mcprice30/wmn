@@ -21,10 +21,10 @@ type ReliableReceiver struct {
 
 // CreateReliableReceiver will instantiate a new reliable receiver listening and
 // transmitting the given manet address.
-func CreateReliableReceiver(address data.ManetAddr) *ReliableReceiver {
+func CreateReliableReceiver() *ReliableReceiver {
 	// SWITCHED TO MANET
 	conn := network.BindManet()
-	conn.SetNeighbors([]data.ManetAddr{0x0003})
+//	conn.SetNeighbors([]data.ManetAddr{0x0003})
 	// END SWITCHED TO MANET
 	out := &ReliableReceiver{
 		conn:            conn,

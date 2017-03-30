@@ -1,6 +1,6 @@
 PREFIX="github.com/mcprice30/wmn"
 
-.PHONY: sensor_hub all fmt packages display_hub manet_node data_source
+.PHONY: sensor_hub all fmt packages display_hub manet_node data_source config
 
 all: packages sensor_hub display_hub manet_node data_source
 
@@ -36,7 +36,7 @@ clean:
 	rm bin/*
 
 start:
-	bin/manet_node > /dev/null &
+	bin/manet_node  &
 	bin/display_hub &
 	bin/sensor_hub &
 	bin/data_source heartrate > /dev/null &

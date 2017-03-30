@@ -15,7 +15,6 @@ import (
 type SensorHub struct {
 	listenAddr string
 
-	transmitSrc data.ManetAddr
 	transmitDst data.ManetAddr
 
 	currPacketBytes int
@@ -26,10 +25,9 @@ type SensorHub struct {
 
 // CreateSensorHub will create a sensor hub that listens on the given address
 // for incoming sensor packets.
-func CreateSensorHub(listen string, src, dst data.ManetAddr) *SensorHub {
+func CreateSensorHub(listen string, dst data.ManetAddr) *SensorHub {
 	hub := &SensorHub{
 		listenAddr:      listen,
-		transmitSrc:     src,
 		transmitDst:     dst,
 		currPacketBytes: data.PacketHeaderBytes,
 	}
@@ -40,7 +38,7 @@ func CreateSensorHub(listen string, src, dst data.ManetAddr) *SensorHub {
 // Listen will cause the given sensor hub to listen to incoming packets
 // building and sending data packets to the fire chief.
 func (hub *SensorHub) Listen() {
-	hub.rc = transport.CreateReliableSender(hub.transmitSrc)
+	hub.rc = transport.CreateReliableSender()
 	conn, err := createConnectionToSensor(hub.listenAddr)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -94,7 +92,6 @@ func (hub *SensorHub) addToTransmitPacket(sd data.SensorData) {
 func (hub *SensorHub) newTransmitPacket() *data.DataPacket {
 	return &data.DataPacket{
 		Header: data.PacketHeader{
-			SourceAddress:      hub.transmitSrc,
 			DestinationAddress: hub.transmitDst,
 			PacketType:         data.PacketTypeData,
 		},

@@ -24,10 +24,10 @@ type ReliableSender struct {
 
 // CreateReliableSender will create a new instance of a reliable sender
 // that sends data from the given manet address.
-func CreateReliableSender(src data.ManetAddr) *ReliableSender {
+func CreateReliableSender() *ReliableSender {
 	// SWITCHED TO MANET!
 	conn := network.BindManet()
-	conn.SetNeighbors([]data.ManetAddr{0x0003})
+	//conn.SetNeighbors([]data.ManetAddr{0x0003})
 	// END SWITCHED TO MANET!
 	duration, err := time.ParseDuration(resendDelay)
 	if err != nil {
@@ -45,6 +45,7 @@ func CreateReliableSender(src data.ManetAddr) *ReliableSender {
 
 // Transmit will reliably transmit a data packet across the network.
 func (rc *ReliableSender) Transmit(packet *data.DataPacket) {
+	packet.Header.SourceAddress = network.GetMyAddress()
 	packet.Header.SequenceNumber = rc.seqNum
 	packet.Header.TTL = data.MaxTTL
 	packet.Header.PreviousHop = network.GetMyAddress()
