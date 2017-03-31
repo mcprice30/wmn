@@ -11,10 +11,10 @@ const numConnectionOptions = 2
 const successMemory = 32
 
 type Selector struct {
-	connections []*ConnectionOption
-	successful [][]bool
+	connections  []*ConnectionOption
+	successful   [][]bool
 	successRates []int
-	idx []int
+	idx          []int
 }
 
 func CreateSelector() *Selector {
@@ -26,13 +26,13 @@ func CreateSelector() *Selector {
 	}
 
 	connections := make([]*ConnectionOption, numConnectionOptions)
-	connections[0] = &ConnectionOption {
+	connections[0] = &ConnectionOption{
 		Conn: network.BindManet(conn),
-		Id: 0,
+		Id:   0,
 	}
-	connections[1] = &ConnectionOption {
+	connections[1] = &ConnectionOption{
 		Conn: network.Bind(conn),
-		Id: 1,
+		Id:   1,
 	}
 	successful := make([][]bool, numConnectionOptions)
 	for i := range successful {
@@ -42,22 +42,22 @@ func CreateSelector() *Selector {
 	successRates := make([]int, numConnectionOptions)
 	idx := make([]int, numConnectionOptions)
 
-	return &Selector {
-		connections: connections,
-		successful: successful,
+	return &Selector{
+		connections:  connections,
+		successful:   successful,
 		successRates: successRates,
-		idx: idx,
+		idx:          idx,
 	}
 
 }
 
 func (s *Selector) GetOption() *ConnectionOption {
-	r := rand.Int31n(2*successMemory+2)
+	r := rand.Int31n(2*successMemory + 2)
 	g := s.successRates[0] - s.successRates[1] + successMemory + 1
 	if int(r) < g {
 		return s.connections[0]
 	} else {
-    return s.connections[1]
+		return s.connections[1]
 	}
 }
 
@@ -70,9 +70,9 @@ func (s *Selector) Succeeded(c *ConnectionOption) {
 	if s.successful[c.Id][s.idx[c.Id]] {
 		old--
 	}
-	s.successRates[c.Id] = old+1
+	s.successRates[c.Id] = old + 1
 	s.successful[c.Id][s.idx[c.Id]] = true
-	s.idx[c.Id] = (s.idx[c.Id]+1) % successMemory
+	s.idx[c.Id] = (s.idx[c.Id] + 1) % successMemory
 }
 
 func (s *Selector) Failed(c *ConnectionOption) {
@@ -82,7 +82,7 @@ func (s *Selector) Failed(c *ConnectionOption) {
 	}
 	s.successRates[c.Id] = old
 	s.successful[c.Id][s.idx[c.Id]] = false
-	s.idx[c.Id] = (s.idx[c.Id]+1) % successMemory
+	s.idx[c.Id] = (s.idx[c.Id] + 1) % successMemory
 }
 
 func (s *Selector) Close() {
@@ -93,5 +93,5 @@ func (s *Selector) Close() {
 
 type ConnectionOption struct {
 	Conn network.Connection
-	Id int
+	Id   int
 }

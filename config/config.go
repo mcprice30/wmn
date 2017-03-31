@@ -60,7 +60,7 @@ func listenForLocationChanges(fn, hostname string) {
 	interval, _ := time.ParseDuration("3s")
 	ticker := time.NewTicker(interval)
 	for {
-		<- ticker.C
+		<-ticker.C
 		info, err := os.Stat(fn)
 		if err != nil {
 			fmt.Println("Cannot get info on config file:", err)
@@ -98,7 +98,7 @@ func updateNodeInfo(fn, hostname string) {
 			fmt.Printf("%s [%d]: Invalid y '%s'\n", fn, lineNumber, line[4])
 			os.Exit(1)
 		}
-		locations[manetAddr] = &data.Point {
+		locations[manetAddr] = &data.Point{
 			X: int(x),
 			Y: int(y),
 		}
@@ -118,7 +118,6 @@ func updateNodeInfo(fn, hostname string) {
 
 	nMap := map[data.ManetAddr]float64{}
 
-
 	for _, neighbor := range neighbors {
 		if dist := locations[myAddr].Dist(locations[neighbor]); dist < 100.0 {
 			nMap[neighbor] = dist
@@ -130,10 +129,10 @@ func updateNodeInfo(fn, hostname string) {
 }
 
 func parseManetAddr(str, fn string, lineNumber int) data.ManetAddr {
-		addrInt, err := strconv.ParseInt(str, 0, 16)
-		if err != nil {
-			fmt.Printf("%s [%d]: Invalid address '%s'\n", fn, lineNumber, str)
-			os.Exit(1)
-		}
-		return data.ManetAddr(addrInt)
+	addrInt, err := strconv.ParseInt(str, 0, 16)
+	if err != nil {
+		fmt.Printf("%s [%d]: Invalid address '%s'\n", fn, lineNumber, str)
+		os.Exit(1)
+	}
+	return data.ManetAddr(addrInt)
 }

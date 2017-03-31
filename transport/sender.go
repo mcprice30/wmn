@@ -15,7 +15,7 @@ const resendDelay = "25ms"
 // ReliableSender will send packets with to a ReliableReceiver. It will continue
 // sending each packet until it receives an acknowledgement.
 type ReliableSender struct {
-	selector *Selector
+	selector           *Selector
 	seqNum             uint16
 	outstandingPackets map[uint16]bool
 	bufferLock         *sync.Mutex
@@ -74,7 +74,7 @@ func (rc *ReliableSender) sendBytes(bytes []byte, seqNum uint16) {
 	fmt.Printf("Transmitting packet #%d\n", seqNum)
 	t := time.NewTicker(rc.interval)
 	conn := rc.selector.GetOption()
-//	fmt.Println("DEBUG: SEND VIA", conn.Id)
+	//	fmt.Println("DEBUG: SEND VIA", conn.Id)
 	conn.Conn.Send(bytes)
 	for {
 		<-t.C
@@ -88,7 +88,7 @@ func (rc *ReliableSender) sendBytes(bytes []byte, seqNum uint16) {
 			}
 			rc.selector.Failed(conn)
 			conn = rc.selector.GetOption()
-//			fmt.Println("DEBUG: SEND VIA", conn.Id)
+			//			fmt.Println("DEBUG: SEND VIA", conn.Id)
 			conn.Conn.Send(bytes)
 		} else {
 			rc.selector.Succeeded(conn)

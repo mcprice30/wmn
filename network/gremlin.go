@@ -13,5 +13,5 @@ func dropFixedRate(rate float64) bool {
 // dropDistance will return true iff the gremlin function decides to drop a
 // packet when transmitting over the given distance.
 func dropDistance(dist float64) bool {
-	return rand.Float64() > 1.0 - (dist / 125.0) * (dist / 125.0)
+	return rand.Float64() > 1.0-(dist/125.0)*(dist/125.0)
 }

@@ -13,18 +13,18 @@ var myNeighbors map[data.ManetAddr]float64 = map[data.ManetAddr]float64{}
 
 // ManetConnection implements a connection over the Manet.
 type ManetConnection struct {
-	laddr     data.ManetAddr
-	conn      *net.UDPConn
-	cache     map[uint16]uint16
+	laddr data.ManetAddr
+	conn  *net.UDPConn
+	cache map[uint16]uint16
 }
 
 // BindManet will instantiate a connection to the manet on the address specified
 // by this process's local address, as determined by SetMyAddress.
 func BindManet(conn *net.UDPConn) *ManetConnection {
 	return &ManetConnection{
-		laddr:     GetMyAddress(),
-		conn:      conn,
-		cache:     map[uint16]uint16{},
+		laddr: GetMyAddress(),
+		conn:  conn,
+		cache: map[uint16]uint16{},
 	}
 }
 
@@ -39,9 +39,9 @@ func CreateManet() *ManetConnection {
 	}
 
 	return &ManetConnection{
-		laddr:     GetMyAddress(),
-		conn:      conn,
-		cache:     map[uint16]uint16{},
+		laddr: GetMyAddress(),
+		conn:  conn,
+		cache: map[uint16]uint16{},
 	}
 }
 

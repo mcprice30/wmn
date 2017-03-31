@@ -16,13 +16,13 @@ const dropChance = 0.90
 // EthernetConnection implements the Connection interface, simulating a network
 // occurring over the default ethernet link.
 type EthernetConnection struct {
-	conn  *net.UDPConn
+	conn *net.UDPConn
 }
 
 // Bind will create an EthernetConnection that listens on the given address.
 func Bind(conn *net.UDPConn) *EthernetConnection {
 	return &EthernetConnection{
-		conn:  conn,
+		conn: conn,
 	}
 }
 

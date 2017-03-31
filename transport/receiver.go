@@ -12,7 +12,7 @@ const maxBufferSize = 64
 // ReliableReciever is used to listen reliably to packets on the given
 // connection.
 type ReliableReceiver struct {
-	selector *Selector
+	selector        *Selector
 	buffer          map[uint16]*data.DataPacket
 	bufferLock      *sync.Mutex
 	nextSequenceNum uint16
@@ -24,10 +24,10 @@ type ReliableReceiver struct {
 func CreateReliableReceiver() *ReliableReceiver {
 	// SWITCHED TO MANET
 	selector := CreateSelector()
-//	conn.SetNeighbors([]data.ManetAddr{0x0003})
+	//	conn.SetNeighbors([]data.ManetAddr{0x0003})
 	// END SWITCHED TO MANET
 	out := &ReliableReceiver{
-		selector:            selector,
+		selector:        selector,
 		buffer:          map[uint16]*data.DataPacket{},
 		bufferLock:      &sync.Mutex{},
 		nextSequenceNum: 0,

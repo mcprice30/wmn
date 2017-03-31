@@ -29,6 +29,8 @@ fmt:
 	go fmt $(PREFIX)/sensor
 	go fmt $(PREFIX)/network
 	go fmt $(PREFIX)/transport
+	go fmt $(PREFIX)/chief
+	go fmt $(PREFIX)/config
 	go fmt *.go
 
 test:

@@ -8,20 +8,20 @@ const BufferSize = 8
 // It is implemented using a circular array.
 type Buffer struct {
 	buff []SensorData
-	idx int
+	idx  int
 }
 
 // CreateBuffer will create and return a new Buffer.
 func CreateBuffer() *Buffer {
-	return &Buffer {
+	return &Buffer{
 		buff: make([]SensorData, BufferSize),
-		idx: 0,
+		idx:  0,
 	}
 }
 
 // Add will add the given data element to the buffer.
 func (b *Buffer) Add(d SensorData) {
-	b.buff[b.idx % BufferSize] = d
+	b.buff[b.idx%BufferSize] = d
 	b.idx++
 }
 
@@ -36,7 +36,7 @@ func (b *Buffer) GetData() []SensorData {
 	}
 	out := make([]SensorData, outSize)
 	for i := range out {
-		out[i] = b.buff[(i + startIdx) % BufferSize]
+		out[i] = b.buff[(i+startIdx)%BufferSize]
 	}
 	return out
 }
