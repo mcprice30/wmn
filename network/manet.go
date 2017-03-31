@@ -20,7 +20,18 @@ type ManetConnection struct {
 
 // BindManet will instantiate a connection to the manet on the address specified
 // by this process's local address, as determined by SetMyAddress.
-func BindManet() *ManetConnection {
+func BindManet(conn *net.UDPConn) *ManetConnection {
+	return &ManetConnection{
+		laddr:     GetMyAddress(),
+		conn:      conn,
+		cache:     map[uint16]uint16{},
+	}
+}
+
+// BindManet will instantiate a connection to the manet on the address specified
+// by this process's local address, as determined by SetMyAddress.
+func CreateManet() *ManetConnection {
+
 	addr := ToUDPAddr(GetMyAddress())
 	conn, err := net.ListenUDP("udp", addr)
 	if err != nil {
@@ -47,7 +58,10 @@ func (c *ManetConnection) Send(bytes []byte) {
 		//fmt.Println("Gremlin!")
 		return
 	}
-	for neighbor := range myNeighbors {
+	for neighbor, dist := range myNeighbors {
+		if dropDistance(dist) {
+			continue
+		}
 		raddr := ToUDPAddr(neighbor)
 		if _, err := c.conn.WriteToUDP(bytes, raddr); err != nil {
 			panic(err)
@@ -106,8 +120,8 @@ func (c *ManetConnection) forward(bytes []byte) {
 		bytes[i] = b
 	}
 
-	for neighbor := range myNeighbors {
-		if neighbor == incomingHeader.PreviousHop {
+	for neighbor, dist := range myNeighbors {
+		if neighbor == incomingHeader.PreviousHop || dropDistance(dist) {
 			continue
 		}
 		raddr := ToUDPAddr(neighbor)

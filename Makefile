@@ -9,6 +9,8 @@ packages:
 	go build $(PREFIX)/sensor
 	go build $(PREFIX)/network
 	go build $(PREFIX)/transport
+	go build $(PREFIX)/chief
+	go build $(PREFIX)/config
 
 sensor_hub:
 	go build -o bin/sensor_hub sensor_hub.go

@@ -120,7 +120,9 @@ func updateNodeInfo(fn, hostname string) {
 
 
 	for _, neighbor := range neighbors {
-		nMap[neighbor] = locations[myAddr].Dist(locations[neighbor])
+		if dist := locations[myAddr].Dist(locations[neighbor]); dist < 100.0 {
+			nMap[neighbor] = dist
+		}
 	}
 
 	network.SetNeighbors(nMap)

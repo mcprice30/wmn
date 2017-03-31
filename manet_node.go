@@ -13,7 +13,7 @@ import (
 func main() {
 
 	config.LoadConfig("config_test.txt", "Node1")
-	conn := network.BindManet()
+	conn := network.CreateManet()
 	for {
 		fmt.Println(conn.Receive())
 	}

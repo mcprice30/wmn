@@ -12,7 +12,7 @@ const maxBufferSize = 64
 // ReliableReciever is used to listen reliably to packets on the given
 // connection.
 type ReliableReceiver struct {
-	conn            network.Connection
+	selector *Selector
 	buffer          map[uint16]*data.DataPacket
 	bufferLock      *sync.Mutex
 	nextSequenceNum uint16
@@ -23,11 +23,11 @@ type ReliableReceiver struct {
 // transmitting the given manet address.
 func CreateReliableReceiver() *ReliableReceiver {
 	// SWITCHED TO MANET
-	conn := network.BindManet()
+	selector := CreateSelector()
 //	conn.SetNeighbors([]data.ManetAddr{0x0003})
 	// END SWITCHED TO MANET
 	out := &ReliableReceiver{
-		conn:            conn,
+		selector:            selector,
 		buffer:          map[uint16]*data.DataPacket{},
 		bufferLock:      &sync.Mutex{},
 		nextSequenceNum: 0,
@@ -45,17 +45,17 @@ func (rr *ReliableReceiver) Listen() *data.DataPacket {
 
 // Close will close the connection, once transmission is done.
 func (rr *ReliableReceiver) Close() {
-	rr.conn.Close()
+	rr.selector.Close()
 }
 
 // runListen will listen on the given address, sending acknowledgements and
 // buffering all recieved packets.
 func (rr *ReliableReceiver) runListen() {
 	for {
-		bytes := rr.conn.Receive()
+		bytes := rr.selector.Receive()
 		packet := data.DataPacketFromBytes(bytes)
 		ackPacket := createAck(packet)
-		rr.conn.Send(ackPacket.ToBytes())
+		rr.selector.GetOption().Conn.Send(ackPacket.ToBytes())
 		rr.bufferPacket(packet)
 	}
 }

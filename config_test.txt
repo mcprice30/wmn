@@ -1,3 +1,3 @@
 0x0001 Sensor  localhost:5009  50 20 0x0003
-0x0002 Display localhost:5010  150 30 0x0003
+0x0002 Display localhost:5010  50 30 0x0003
 0x0003 Node1   localhost:5011  50 40 0x0001 0x0002

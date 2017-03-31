@@ -15,7 +15,7 @@ const resendDelay = "25ms"
 // ReliableSender will send packets with to a ReliableReceiver. It will continue
 // sending each packet until it receives an acknowledgement.
 type ReliableSender struct {
-	conn               network.Connection
+	selector *Selector
 	seqNum             uint16
 	outstandingPackets map[uint16]bool
 	bufferLock         *sync.Mutex
@@ -26,7 +26,7 @@ type ReliableSender struct {
 // that sends data from the given manet address.
 func CreateReliableSender() *ReliableSender {
 	// SWITCHED TO MANET!
-	conn := network.BindManet()
+	selector := CreateSelector()
 	//conn.SetNeighbors([]data.ManetAddr{0x0003})
 	// END SWITCHED TO MANET!
 	duration, err := time.ParseDuration(resendDelay)
@@ -34,7 +34,7 @@ func CreateReliableSender() *ReliableSender {
 		panic(err)
 	}
 	out := &ReliableSender{
-		conn:               conn,
+		selector:           selector,
 		outstandingPackets: map[uint16]bool{},
 		interval:           duration,
 		bufferLock:         &sync.Mutex{},
@@ -57,7 +57,7 @@ func (rc *ReliableSender) Transmit(packet *data.DataPacket) {
 // all outstanding packets.
 func (rc *ReliableSender) listenForAck() {
 	for {
-		ack := data.DataPacketFromBytes(rc.conn.Receive())
+		ack := data.DataPacketFromBytes(rc.selector.Receive())
 		fmt.Println("Got ack for", ack.Header.SequenceNumber)
 		rc.bufferLock.Lock()
 		delete(rc.outstandingPackets, ack.Header.SequenceNumber)
@@ -73,7 +73,9 @@ func (rc *ReliableSender) sendBytes(bytes []byte, seqNum uint16) {
 	rc.bufferLock.Unlock()
 	fmt.Printf("Transmitting packet #%d\n", seqNum)
 	t := time.NewTicker(rc.interval)
-	rc.conn.Send(bytes)
+	conn := rc.selector.GetOption()
+//	fmt.Println("DEBUG: SEND VIA", conn.Id)
+	conn.Conn.Send(bytes)
 	for {
 		<-t.C
 		rc.bufferLock.Lock()
@@ -84,8 +86,12 @@ func (rc *ReliableSender) sendBytes(bytes []byte, seqNum uint16) {
 			for i, b := range header.ToBytes() {
 				bytes[i] = b
 			}
-			rc.conn.Send(bytes)
+			rc.selector.Failed(conn)
+			conn = rc.selector.GetOption()
+//			fmt.Println("DEBUG: SEND VIA", conn.Id)
+			conn.Conn.Send(bytes)
 		} else {
+			rc.selector.Succeeded(conn)
 			rc.bufferLock.Unlock()
 			t.Stop()
 			return

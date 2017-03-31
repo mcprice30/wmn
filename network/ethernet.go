@@ -1,8 +1,7 @@
 package network
 
 import (
-	"fmt"
-	"math/rand"
+	//"fmt"
 	"net"
 
 	"github.com/mcprice30/wmn/data"
@@ -17,20 +16,12 @@ const dropChance = 0.90
 // EthernetConnection implements the Connection interface, simulating a network
 // occurring over the default ethernet link.
 type EthernetConnection struct {
-	laddr data.ManetAddr
 	conn  *net.UDPConn
 }
 
 // Bind will create an EthernetConnection that listens on the given address.
-func Bind(address data.ManetAddr) *EthernetConnection {
-	addr := ToUDPAddr(address)
-	conn, err := net.ListenUDP("udp", addr)
-	if err != nil {
-		panic(err)
-	}
-
+func Bind(conn *net.UDPConn) *EthernetConnection {
 	return &EthernetConnection{
-		laddr: address,
 		conn:  conn,
 	}
 }
@@ -38,8 +29,8 @@ func Bind(address data.ManetAddr) *EthernetConnection {
 // Send will attempt to send the given packet to the address specified in the
 // packet's header, as specified by the Connection interface.
 func (c *EthernetConnection) Send(bytes []byte) {
-	if rand.Float64() < dropChance {
-		fmt.Println("Gremlin!")
+	if dropFixedRate(dropChance) {
+		//fmt.Println("Gremlin!")
 		return
 	}
 	header := data.PacketHeaderFromBytes(bytes)
