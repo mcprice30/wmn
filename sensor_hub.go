@@ -3,15 +3,24 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/mcprice30/wmn/config"
 	"github.com/mcprice30/wmn/sensor"
 )
 
 func main() {
 
-	config.LoadConfig("config_test.txt", "Sensor")
+	if len(os.Args) != 3 {
+		fmt.Println("Use:", os.Args[0], "<hostname> <listenport>")
+		os.Exit(127)
+	}
+
+	config.LoadConfig("config_test.txt", os.Args[1])
 
 	// Listen for data from the sensors.
-	hub := sensor.CreateSensorHub("localhost:5001", 0x0002)
+	listenAddr := fmt.Sprintf("localhost:%s", os.Args[2])
+	hub := sensor.CreateSensorHub(listenAddr, "Display")
 	hub.Listen()
 }

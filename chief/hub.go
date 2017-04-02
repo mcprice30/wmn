@@ -16,9 +16,9 @@ var sendChan = make(chan []byte, 8)
 
 // RunListener will listen for incoming packets on our local address.
 // It will print out the buffers of the packets recieved.
-func RunListener() {
+func RunListener(port string) {
 
-	go runServer()
+	go runServer(port)
 
 	rec := transport.CreateReliableReceiver()
 	defer rec.Close()
@@ -56,11 +56,12 @@ func wsHandler(ws *websocket.Conn) {
 	}
 }
 
-func runServer() {
+func runServer(port string) {
+	prt := ":" + port
 	http.Handle("/ws", websocket.Handler(wsHandler))
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/home", http.StripPrefix("/home", fs))
-	err := http.ListenAndServe(":12345", nil)
+	err := http.ListenAndServe(prt, nil)
 	if err != nil {
 		fmt.Println("WS ERR: ", err)
 	}

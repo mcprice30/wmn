@@ -30,6 +30,12 @@ func ToUDPAddr(addr data.ManetAddr) *net.UDPAddr {
 	}
 }
 
+// GetAddrFromHostname will get the hostname associated with the given
+// manet address.
+func GetAddrFromHostname(hostname string) data.ManetAddr {
+	return dns[hostname]
+}
+
 // SetAddress will map a manet address, to a location string, such as
 // 'tux054:10010'
 func SetAddress(addr data.ManetAddr, location string) {

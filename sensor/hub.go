@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/mcprice30/wmn/data"
+	"github.com/mcprice30/wmn/network"
 	"github.com/mcprice30/wmn/transport"
 )
 
@@ -25,10 +26,10 @@ type SensorHub struct {
 
 // CreateSensorHub will create a sensor hub that listens on the given address
 // for incoming sensor packets.
-func CreateSensorHub(listen string, dst data.ManetAddr) *SensorHub {
+func CreateSensorHub(listenAddr, dstName string) *SensorHub {
 	hub := &SensorHub{
-		listenAddr:      listen,
-		transmitDst:     dst,
+		listenAddr:      listenAddr,
+		transmitDst:     network.GetAddrFromHostname(dstName),
 		currPacketBytes: data.PacketHeaderBytes,
 	}
 	hub.currPacket = hub.newTransmitPacket()
