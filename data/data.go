@@ -22,6 +22,7 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -33,6 +34,9 @@ type SensorData interface {
 
 	// SensorData inherits String() string from fmt.Stringer.
 	fmt.Stringer
+
+	// SensorData inherits MarhsalJSON() ([]byte, error) from json.Marshaler
+	json.Marshaler
 
 	// Id indicates the sequence ID of this element of data among all data points
 	// generated from this sensor.

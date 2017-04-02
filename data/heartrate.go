@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -50,6 +51,12 @@ func (d *HeartRateData) Type() byte {
 // defined by fmt.Stringer.
 func (d *HeartRateData) String() string {
 	return fmt.Sprintf("Heart Rate [%d]: %f", d.id, d.heartRate)
+}
+
+// MarhsalJSON implements json.Marshaler, allowing for this data type to be
+// converted to JSON easily.
+func (d *HeartRateData) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.heartRate)
 }
 
 // NumBytes returns the number of bytes that a HeartRateData object is

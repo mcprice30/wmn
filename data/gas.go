@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -50,6 +51,12 @@ func (d *GasData) Type() byte {
 // defined by fmt.Stringer.
 func (d *GasData) String() string {
 	return fmt.Sprintf("Gas [%d]: %f", d.id, d.percentage)
+}
+
+// MarhsalJSON implements json.Marshaler, allowing for this data type to be
+// converted to JSON easily.
+func (d *GasData) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.percentage)
 }
 
 // NumBytes returns the number of bytes that a GasData object is marshalled to,

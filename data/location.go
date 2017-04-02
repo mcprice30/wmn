@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -54,6 +55,16 @@ func (d *LocationData) Type() byte {
 // as defined by fmt.Stringer.
 func (d *LocationData) String() string {
 	return fmt.Sprintf("Location [%d]: %f, %f", d.id, d.lat, d.lon)
+}
+
+// MarhsalJSON implements json.Marshaler, allowing for this data type to be
+// converted to JSON easily.
+func (d *LocationData) MarshalJSON() ([]byte, error) {
+	outMap := map[string]float64{
+		"lat": d.lat,
+		"lon": d.lon,
+	}
+	return json.Marshal(outMap)
 }
 
 // NumBytes returns the number of bytes that a LocationData object is marshalled

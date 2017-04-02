@@ -1,7 +1,7 @@
 package data
 
 // BufferSize indicates how many elements to store at once.
-const BufferSize = 8
+const BufferSize = 64
 
 // Buffer is responsible for storing up to BufferSize elements at once, while
 // maintaining their original order.

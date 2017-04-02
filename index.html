@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Sample of websocket with golang</title>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	</head>
+    <body>
+      <div style="display: table;">
+        <div style="display: table-row">
+          <div style="display: table-cell">
+            <h3>Heart Rate: <span id="heart-rate"></span></h3>
+            <div id="hr-plot" style="width: 480px; height: 500px"></div>
+          </div>
+          <div style="display: table-cell">
+            <h3>Location: <span id="location"></span></h3>
+            <div id="loc-plot" style="width: 480px; height: 500px"></div>
+          </div>
+        </div>
+        <div style="display: table-row">
+          <div style="display: table-cell">
+            <h3>Oxygen: <span id="oxygen"></span></h3>
+            <div id="ox-plot" style="width: 480px; height: 500px"></div>
+          </div>
+          <div style="display: table-cell">
+            <h3>Gas: <span id="gas"></span><h3>
+            <div id="gas-plot" style="width: 480px; height: 500px"></div>
+          </div>
+        </div>
+      </div>
+      <script>
+        var ids = ["heart-rate", "location", "oxygen", "gas"];
+        var plotids = ["hr-plot", "loc-plot", "ox-plot", "gas-plot"];
+        var ws = new WebSocket("ws://localhost:12345/ws");
+        ws.onmessage = function(e) {
+          var d = JSON.parse(e.data);
+          var lastEntry = d.data[d.data.length-1];
+          if (d.id != 1) {
+            document.getElementById(ids[d.id]).innerHTML = lastEntry;
+            var x = [];
+            for (var i = 0; i < d.data.length; i++) {
+              x.push(i+1);
+            }
+            var trace = {
+              x: x,
+              y: d.data,
+              type: 'scatter'
+            };
+            Plotly.newPlot(plotids[d.id], [trace]);
+          } else {
+            var str = "X: " + lastEntry.lat + " Y: " + lastEntry.lon;
+            document.getElementById(ids[d.id]).innerHTML = str;
+            var x = [];
+            var y = [];
+
+            for (var i = 0; i < d.data.length; i++) {
+              x.push(d.data[i].lat);
+              y.push(d.data[i].lon);
+            }
+            var trace = {
+              x: x,
+              y: y,
+              type: 'scatter'
+            };
+            Plotly.newPlot(plotids[d.id], [trace]);
+          }
+        }
+      </script>
+    </body>
+</html>

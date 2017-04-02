@@ -2,15 +2,24 @@
 package chief
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
+
+	"golang.org/x/net/websocket"
 
 	"github.com/mcprice30/wmn/data"
 	"github.com/mcprice30/wmn/transport"
 )
 
+var sendChan = make(chan []byte, 8)
+
 // RunListener will listen for incoming packets on our local address.
 // It will print out the buffers of the packets recieved.
 func RunListener() {
+
+	go runServer()
+
 	rec := transport.CreateReliableReceiver()
 	defer rec.Close()
 
@@ -24,12 +33,33 @@ func RunListener() {
 		for _, d := range data.Body {
 			buffers[d.Type()].Add(d)
 		}
-		for _, b := range buffers {
-			for _, d := range b.GetData() {
-				fmt.Print(d.Id(), " ")
+		for i, b := range buffers {
+			sendData := map[string]interface{}{
+				"id":   i,
+				"data": b.GetData(),
 			}
-			fmt.Println()
+			if js, err := json.Marshal(sendData); err != nil {
+				fmt.Println("ERROR: ", err)
+			} else {
+				sendChan <- js
+			}
 		}
 	}
+}
 
+func wsHandler(ws *websocket.Conn) {
+	for {
+		if _, err := ws.Write(<-sendChan); err != nil {
+			fmt.Println(err)
+			break
+		}
+	}
+}
+
+func runServer() {
+	http.Handle("/ws", websocket.Handler(wsHandler))
+	err := http.ListenAndServe(":12345", nil)
+	if err != nil {
+		fmt.Println("WS ERR: ", err)
+	}
 }

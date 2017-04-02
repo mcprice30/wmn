@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -72,6 +73,12 @@ func (d *OxygenData) ToBytes() []byte {
 		idx++
 	}
 	return out
+}
+
+// MarhsalJSON implements json.Marshaler, allowing for this data type to be
+// converted to JSON easily.
+func (d *OxygenData) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.percentage)
 }
 
 // OxygenDataFromBytes takes the given input bytes and returns a new
