@@ -22,10 +22,7 @@ type ReliableReceiver struct {
 // CreateReliableReceiver will instantiate a new reliable receiver listening and
 // transmitting the given manet address.
 func CreateReliableReceiver() *ReliableReceiver {
-	// SWITCHED TO MANET
 	selector := CreateSelector()
-	//	conn.SetNeighbors([]data.ManetAddr{0x0003})
-	// END SWITCHED TO MANET
 	out := &ReliableReceiver{
 		selector:        selector,
 		buffer:          map[uint16]*data.DataPacket{},

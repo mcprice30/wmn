@@ -25,10 +25,7 @@ type ReliableSender struct {
 // CreateReliableSender will create a new instance of a reliable sender
 // that sends data from the given manet address.
 func CreateReliableSender() *ReliableSender {
-	// SWITCHED TO MANET!
 	selector := CreateSelector()
-	//conn.SetNeighbors([]data.ManetAddr{0x0003})
-	// END SWITCHED TO MANET!
 	duration, err := time.ParseDuration(resendDelay)
 	if err != nil {
 		panic(err)
