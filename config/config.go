@@ -1,3 +1,5 @@
+// Package config is responsible for handling changing configurations as they
+// are updated on the NFS.
 package config
 
 import (
@@ -12,7 +14,7 @@ import (
 	"github.com/mcprice30/wmn/network"
 )
 
-var lastModified = time.Now()
+var configLastModified = time.Now()
 
 // LoadConfig will load a configuration file with the given file name.
 // Each line of the config file should contain:
@@ -66,8 +68,8 @@ func listenForLocationChanges(fn, hostname string) {
 			fmt.Println("Cannot get info on config file:", err)
 			os.Exit(1)
 		}
-		if !info.ModTime().Equal(lastModified) {
-			lastModified = info.ModTime()
+		if !info.ModTime().Equal(configLastModified) {
+			configLastModified = info.ModTime()
 			updateNodeInfo(fn, hostname)
 		}
 	}

@@ -1,17 +1,11 @@
 package network
 
 import (
-	//"fmt"
+	"fmt"
 	"net"
 
 	"github.com/mcprice30/wmn/data"
 )
-
-// dropChance indicates the probability that a given packet is dropped by
-// the ethernet connection. Note that the same probability is applied to both
-// the data packet and the acknowledgement packet. For example, if this is 50%,
-// then the probability of a completely successful transmission is only 25%.
-const dropChance = 0.90
 
 // EthernetConnection implements the Connection interface, simulating a network
 // occurring over the default ethernet link.
@@ -29,8 +23,8 @@ func Bind(conn *net.UDPConn) *EthernetConnection {
 // Send will attempt to send the given packet to the address specified in the
 // packet's header, as specified by the Connection interface.
 func (c *EthernetConnection) Send(bytes []byte) {
-	if dropFixedRate(dropChance) {
-		//fmt.Println("Gremlin!")
+	if dropFixedRate() {
+		fmt.Println("DROP ETHERNET!")
 		return
 	}
 	header := data.PacketHeaderFromBytes(bytes)

@@ -1,5 +1,3 @@
-// Package sensor represents a sensor that is sending data to the communication
-// hub.
 package main
 
 import (
@@ -18,5 +16,6 @@ func main() {
 	}
 
 	config.LoadConfig("config_test.txt", os.Args[1])
+	config.ListenForErrorChanges("error_test.txt")
 	chief.RunListener(os.Args[2])
 }

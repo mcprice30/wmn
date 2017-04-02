@@ -1,5 +1,3 @@
-// Package sensor represents a sensor that is sending data to the communication
-// hub.
 package main
 
 import (

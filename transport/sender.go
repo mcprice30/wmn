@@ -70,8 +70,7 @@ func (rc *ReliableSender) sendBytes(bytes []byte, seqNum uint16) {
 	rc.bufferLock.Unlock()
 	fmt.Printf("Transmitting packet #%d\n", seqNum)
 	t := time.NewTicker(rc.interval)
-	conn := rc.selector.GetOption()
-	//	fmt.Println("DEBUG: SEND VIA", conn.Id)
+	conn := rc.selector.GetOption(true)
 	conn.Conn.Send(bytes)
 	for {
 		<-t.C
@@ -84,8 +83,7 @@ func (rc *ReliableSender) sendBytes(bytes []byte, seqNum uint16) {
 				bytes[i] = b
 			}
 			rc.selector.Failed(conn)
-			conn = rc.selector.GetOption()
-			//			fmt.Println("DEBUG: SEND VIA", conn.Id)
+			conn = rc.selector.GetOption(true)
 			conn.Conn.Send(bytes)
 		} else {
 			rc.selector.Succeeded(conn)

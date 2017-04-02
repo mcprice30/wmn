@@ -1,5 +1,3 @@
-// Package sensor represents a sensor that is sending data to the communication
-// hub.
 package main
 
 import (
@@ -21,6 +19,7 @@ func main() {
 
 	// Listen for data from the sensors.
 	listenAddr := fmt.Sprintf("localhost:%s", os.Args[2])
+	config.ListenForErrorChanges("error_test.txt")
 	hub := sensor.CreateSensorHub(listenAddr, "Display")
 	hub.Listen()
 }

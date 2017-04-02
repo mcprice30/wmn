@@ -1,3 +1,4 @@
+// Package transport establishes a reliable connection on top of both networks
 package transport
 
 import (
@@ -52,7 +53,7 @@ func (rr *ReliableReceiver) runListen() {
 		bytes := rr.selector.Receive()
 		packet := data.DataPacketFromBytes(bytes)
 		ackPacket := createAck(packet)
-		rr.selector.GetOption().Conn.Send(ackPacket.ToBytes())
+		rr.selector.GetOption(false).Conn.Send(ackPacket.ToBytes())
 		rr.bufferPacket(packet)
 	}
 }

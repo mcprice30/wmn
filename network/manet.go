@@ -1,7 +1,6 @@
 package network
 
 import (
-	"math/rand"
 	"net"
 
 	"github.com/mcprice30/wmn/data"
@@ -54,10 +53,6 @@ func SetNeighbors(neighbors map[data.ManetAddr]float64) {
 // Send will attempt to transmit the given packet bytes over the manet, as
 // specified by the Connection interface.
 func (c *ManetConnection) Send(bytes []byte) {
-	if rand.Float64() < dropChance {
-		//fmt.Println("Gremlin!")
-		return
-	}
 	for neighbor, dist := range myNeighbors {
 		if dropDistance(dist) {
 			continue
