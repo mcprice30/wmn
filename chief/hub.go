@@ -58,6 +58,8 @@ func wsHandler(ws *websocket.Conn) {
 
 func runServer() {
 	http.Handle("/ws", websocket.Handler(wsHandler))
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/home", http.StripPrefix("/home", fs))
 	err := http.ListenAndServe(":12345", nil)
 	if err != nil {
 		fmt.Println("WS ERR: ", err)
