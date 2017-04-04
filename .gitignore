@@ -1,1 +1,4 @@
-bin/
+bin
+pkg
+gobin
+src/golang.org

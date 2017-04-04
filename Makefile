@@ -1,6 +1,13 @@
-PREFIX="github.com/mcprice30/wmn"
-GO=go
+SETPATH=GOPATH="$(shell pwd)"
+GOCMD=gobin/go/bin/go
+GO=$(SETPATH) $(GOCMD)
 
+PREFIX="github.com/mcprice30/wmn"
+
+GO_DOWNLOAD_SRC="https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz"
+GO_TARBALL=godownload.tar.gz
+GROOT=$(shell pwd)/gobin/go
+export GOROOT:=$(GROOT)
 
 .PHONY: sensor_hub all fmt packages display_hub manet_node data_source config
 
@@ -54,3 +61,15 @@ start_test:
 
 kill:
 	pidof `ls ./bin` | xargs kill
+
+setup:
+	@mkdir -p bin
+	@mkdir -p gobin
+	@echo "Downloading Go..."
+	@curl $(GO_DOWNLOAD_SRC) > gobin/$(GO_TARBALL) && \
+	echo "Extracting Go..." && \
+	tar -xzf gobin/$(GO_TARBALL) -C gobin && \
+	echo "Go installed successfully!"
+	@echo "Installing dependencies!"
+	@$(GO) get golang.org/x/net/websocket
+	@echo "Setup complete!"
