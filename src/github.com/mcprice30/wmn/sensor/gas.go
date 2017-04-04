@@ -19,6 +19,8 @@ type GasSensor struct {
 	interval time.Duration
 	// id is the id of the upcoming data segment, used in sequencing data.
 	id byte
+
+	lastGas float64
 }
 
 // CreateGasSensor will create a new instance of GasSensor.
@@ -37,7 +39,11 @@ func (s *GasSensor) Interval() time.Duration {
 // GetData will generate a new data point from the sensor.
 // It implements SensorStream.
 func (s *GasSensor) GetData() data.SensorData {
-	pct := rand.Float64() * 15.0
+	pct := s.lastGas + rand.Float64()*5.0 - 2.50
+	if pct < 0 {
+		pct = 0
+	}
+	s.lastGas = pct
 	defer s.incrementId()
 	return data.CreateGasData(s.id, pct)
 }

@@ -19,12 +19,15 @@ type OxygenSensor struct {
 	interval time.Duration
 	// id is the id of the upcoming data segment, used in sequencing data.
 	id byte
+
+	lastOx float64
 }
 
 // CreateOxygenSensor will create a new instance of OxygenSensor.
 func CreateOxygenSensor() *OxygenSensor {
 	return &OxygenSensor{
 		interval: intervalFromString(OxygenSensorInterval),
+		lastOx:   100.0,
 	}
 }
 
@@ -37,7 +40,8 @@ func (s *OxygenSensor) Interval() time.Duration {
 // GetDaata will generate a new data point from the sensor.
 // It implements SensorStream.
 func (s *OxygenSensor) GetData() data.SensorData {
-	pct := rand.Float64() * 100.0
+	pct := s.lastOx - rand.Float64()*0.01
+	s.lastOx = pct
 	defer s.incrementId()
 	return data.CreateOxygenData(s.id, pct)
 }

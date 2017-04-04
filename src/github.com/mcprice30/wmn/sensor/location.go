@@ -19,6 +19,9 @@ type LocationSensor struct {
 	interval time.Duration
 	// id is the id of the upcoming data segment, used in sequencing data.
 	id byte
+
+	lastLat float64
+	lastLon float64
 }
 
 // CreateLocationSensor will create a new instance of LocationSensor.
@@ -37,8 +40,10 @@ func (s *LocationSensor) Interval() time.Duration {
 // GetData will generate a new data point from the sensor.
 // It implements SensorStream.
 func (s *LocationSensor) GetData() data.SensorData {
-	lat := rand.Float64()*80.0 + 100.0
-	lon := rand.Float64()*80.0 + 100.0
+	lat := s.lastLat + rand.Float64()*5.0 - 2.5
+	lon := s.lastLon + rand.Float64()*5.0 - 2.5
+	s.lastLat = lat
+	s.lastLon = lon
 	defer s.incrementId()
 	return data.CreateLocationData(s.id, lat, lon)
 }

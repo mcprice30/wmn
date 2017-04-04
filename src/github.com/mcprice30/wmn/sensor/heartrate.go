@@ -19,12 +19,15 @@ type HeartRateSensor struct {
 	interval time.Duration
 	// id is the id of the upcoming data segment, used in sequencing data.
 	id byte
+
+	lastHr float64
 }
 
 // CreateHeartRateSensor will create a new instance of HeartRateSensor.
 func CreateHeartRateSensor() *HeartRateSensor {
 	return &HeartRateSensor{
 		interval: intervalFromString(HeartRateSensorInterval),
+		lastHr:   130.0,
 	}
 }
 
@@ -37,7 +40,14 @@ func (s *HeartRateSensor) Interval() time.Duration {
 // GetData will generate a new data point from the sensor.
 // It implements SensorStream
 func (s *HeartRateSensor) GetData() data.SensorData {
-	hr := rand.Float64()*80.0 + 100.0
+	hr := s.lastHr + rand.Float64()*5.0 - 2.5
+	if hr < 80 {
+		hr = 80
+	}
+	if hr > 180 {
+		hr = 180
+	}
+	s.lastHr = hr
 	defer s.incrementId()
 	return data.CreateHeartRateData(s.id, hr)
 }
