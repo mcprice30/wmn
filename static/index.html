@@ -30,7 +30,7 @@
       <script>
         var ids = ["heart-rate", "location", "oxygen", "gas"];
         var plotids = ["hr-plot", "loc-plot", "ox-plot", "gas-plot"];
-        var ws = new WebSocket("ws://localhost:12345/ws");
+        var ws = new WebSocket("ws://localhost:10109/ws");
         ws.onmessage = function(e) {
           var d = JSON.parse(e.data);
           var lastEntry = d.data[d.data.length-1];
