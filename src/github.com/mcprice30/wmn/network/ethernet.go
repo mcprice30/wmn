@@ -1,7 +1,6 @@
 package network
 
 import (
-	"fmt"
 	"net"
 
 	"github.com/mcprice30/wmn/data"
@@ -24,7 +23,6 @@ func Bind(conn *net.UDPConn) *EthernetConnection {
 // packet's header, as specified by the Connection interface.
 func (c *EthernetConnection) Send(bytes []byte) {
 	if dropFixedRate() {
-		fmt.Println("DROP ETHERNET!")
 		return
 	}
 	header := data.PacketHeaderFromBytes(bytes)

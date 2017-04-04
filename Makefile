@@ -61,9 +61,9 @@ clean:
 start: start_test
 
 start_test:
-	bin/manet_node Node1 &
-	bin/display_hub Display 10109 &
-	bin/sensor_hub Sensor 10100 &
+	bin/manet_node config_test.txt Node1 &
+	bin/display_hub config_test.txt error_test.txt Display 10109 &
+	bin/sensor_hub config_test.txt error_test.txt Sensor 10100 &
 	bin/data_source heartrate 10108 10100> /dev/null &
 	bin/data_source location 10107 10100> /dev/null &
 	bin/data_source oxygen 10106 10100> /dev/null &
