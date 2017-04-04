@@ -24,13 +24,13 @@ The data source binary is used to simulate a data sensor, generating data from
 one of four types of sensors and sending it to the sensor hub. It is run by
 calling `bin/data_source <sensor name> <generate port> <hub port>` where:
 
-  * <sensor name> Denotes the name of the sensor to generate data from. This
+  * `<sensor name>` Denotes the name of the sensor to generate data from. This
   must be one of "heartrate", "location", "oxygen", or "gas"
 
-  * <generate port> Indicates the port number on which the data should be
+  * `<generate port>` Indicates the port number on which the data should be
   generated.
 
-  * <hub port> Indicates the port to which the data should be sent.
+  * `<hub port>` Indicates the port to which the data should be sent.
 
 2. __Display Hub__
 
@@ -38,26 +38,26 @@ The display hub binary is used to display data for the fire chief once it is
 received from the first responder. It is run by calling
 `bin/display_hub <config file> <error file> <hostname> <display port>` where:
 
-  * <config file> Denotes the path to the configuration file, which must follow
+  * `<config file>` Denotes the path to the configuration file, which must follow
   the format described below, relative to the project root.
 
-  * <error file> Denotes the path to the error file, which must follow the
+  * `<error file>` Denotes the path to the error file, which must follow the
   format described below, relative to the project root.
 
-  * <hostname> Denotes the hostname of this node. This value should be "Display"
+  * `<hostname>` Denotes the hostname of this node. This value should be "Display"
 
-  * <display port> Indicates the port on which a webpage containing the display
+  * `<display port>` Indicates the port on which a webpage containing the display
   should be served. This value should be 10109.
 
 3. __Manet Node__
 
 The manet node binary is used to run a single node in the MANET. It is run by
-calling `bin/manet_node` <config file> <hostname>` where:
+calling `bin/manet_node <config file> <hostname>` where:
 
-  * <config file> Denotes the path to the configuration file, which must follow
+  * `<config file>` Denotes the path to the configuration file, which must follow
   the format described below, relative to the project root.
 
-  * <hostname> Is the hostname for this manet node, which must appear in the
+  * `<hostname>` Is the hostname for this manet node, which must appear in the
   configuration file.
 
 4. __Sensor Hub__
@@ -65,15 +65,15 @@ calling `bin/manet_node` <config file> <hostname>` where:
 The sensor hub binary serves as the sensor hub on the first responder. It is run
 by calling `bin/sensor_hub <config file> <error file> <hostname> <listenport>` where:
 
-  * <config file> Denotes the path to the configuration file, which must follow
+  * `<config file>` Denotes the path to the configuration file, which must follow
   the format described below, relative to the project root.
 
-  * <error file> Denotes the path to the error file, which must follow the
+  * `<error file>` Denotes the path to the error file, which must follow the
   format described below, relative to the project root.
 
-  * <hostname> Denotes the hostname of this node. This value should be "Sensor"
+  * `<hostname>` Denotes the hostname of this node. This value should be "Sensor"
 
-  * <listenport> Indicates on what port this binary will listen to sensor data.
+  * `<listenport>` Indicates on what port this binary will listen to sensor data.
 
 Note that the Display Hub and Manet Nodes should be run before the sensor hub,
 and that the sensor hub should be run before the data sources.
@@ -86,23 +86,23 @@ see the project in action.
 The config file should consist of a complete description of every device in
 the network, with each device having one line formatted the following way:
 
-<manet address> <manet hostname> <host:port> <x> <y> <neighbor>...
+`<manet address> <manet hostname> <host:port> <x> <y> <neighbor>`...
 
 Where:
-  * <manet address> is the 16-bit address that uniquely identifies this node.
+  * `<manet address>` is the 16-bit address that uniquely identifies this node.
 
-  * <manet hostname> is the hostname of this node to the network. Note that
+  * `<manet hostname>` is the hostname of this node to the network. Note that
   there should always be a hostname of "Sensor" and "Display", the sensor and
   display hubs respectively.
 
-  * <host:port> indicates the hostname and port that the node will actually be
+  * `<host:port>` indicates the hostname and port that the node will actually be
   run at. For example, this could be `tux065.eng.auburn.edu:10102`.
 
-  * <x> is the X coordinate of the node.
+  * `<x>` is the X coordinate of the node.
 
-  * <y> is the Y coordinate of the node.
+  * `<y>` is the Y coordinate of the node.
 
-  * <neighbor>... is a space separated list of the manet addresses of all
+  * `<neighbor>...` is a space separated list of the manet addresses of all
   nodes that this node is neighbors with.
 
 ### Error File Format
