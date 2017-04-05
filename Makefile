@@ -69,6 +69,28 @@ start_test:
 	bin/data_source oxygen 10106 10100 &
 	bin/data_source gas 10105 10100 &
 
+# MUST BE CALLED ON TUX 203
+start_demo:
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node1 &'
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node2 &'
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node3 &'
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node4 &'
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node5 &'
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node6 &'
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node7 &'
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node8 &'
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node9 &'
+	ssh mcp0038@tux204 'cd Lab2/wmn && bin/manet_node config_test.txt Node10 &'
+	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config_test.txt Node11 &'
+	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config_test.txt Node12 &'
+	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config_test.txt Node13 &'
+	ssh mcp0038@tux205 'cd Lab2/wmn && bin/display_hub config_test.txt error_test.txt Display 10109 &'
+	bin/sensor_hub config_test.txt error_test.txt Sensor 10100 &
+	bin/data_source heartrate 10108 10100 &
+	bin/data_source location 10107 10100 &
+	bin/data_source oxygen 10106 10100 &
+	bin/data_source gas 10105 10100 &
+
 kill:
 	pidof `ls ./bin` | xargs kill
 
