@@ -98,7 +98,7 @@ start_demo:
 	bin/data_source location 10107 10100 &
 	bin/data_source oxygen 10106 10100 &
 	bin/data_source gas 10105 10100 &
-	#bin/mobility
+	bin/mobility
 
 kill:
 	killall $$(ls bin)
