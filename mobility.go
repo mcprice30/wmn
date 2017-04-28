@@ -115,7 +115,7 @@ func SaveLines(fn string, lines []*Line) {
 }
 
 func main() {
-  ticker := time.NewTicker(2 * time.Second)
+  ticker := time.NewTicker(20 * time.Second)
   for {
 		fmt.Println("Updating config file!")
     lines := ReadLines("config.txt")

@@ -1,7 +1,6 @@
 package network
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/mcprice30/wmn/data"
@@ -52,12 +51,10 @@ func (c *ManetConnection) SendHelloPacket() {
 		MPRLinks:           mprLinks,
 	}
 
-	fmt.Println("Sending Hello Packet", sendPacket)
 	c.Send(sendPacket.ToBytes())
 }
 
 func handleHelloPacket(packet []byte) {
-	fmt.Printf("Got Hello Packet at 0x%04x\n", GetMyAddress())
 	hp := data.HelloPacketFromBytes(packet)
 
 	bidirectionalConnection := false
