@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"strconv"
@@ -100,32 +101,26 @@ func ChangeLines(lines []*Line) {
 }
 
 func SaveLines(fn string, lines []*Line) {
-  file, err := os.OpenFile(fn, os.O_WRONLY, 0755)
-  if err != nil {
-    panic(err)
-  }
-  defer file.Close()
 
-  writer := bufio.NewWriter(file)
+	out := ""
   for _, line := range lines {
     write := fmt.Sprintf("%s\n", line)
     fmt.Printf("Writing to %s %s", fn, write)
-    _, err := writer.WriteString(write)
-    if err != nil {
-      panic(err)
-    }
+		out += write
   }
-  if err := writer.Flush(); err != nil {
+
+	if err := ioutil.WriteFile(fn, []byte(out), 0755); err != nil {
 		panic(err)
 	}
 }
 
 func main() {
-  ticker := time.NewTicker(10 * time.Second)
+  ticker := time.NewTicker(2 * time.Second)
   for {
-    <- ticker.C
+		fmt.Println("Updating config file!")
     lines := ReadLines("config.txt")
     ChangeLines(lines)
     SaveLines("config.txt", lines)
+    <- ticker.C
   }
 }
