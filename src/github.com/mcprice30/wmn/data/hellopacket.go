@@ -53,7 +53,7 @@ func (p *HelloPacket) ToBytes() []byte {
 	}
 
 	out[idx] = p.NumBidirectional
-	idx++;
+	idx++
 
 	for _, addr := range p.BidirectionalLinks {
 		for _, b := range uint16ToBytes(uint16(addr)) {
@@ -95,7 +95,7 @@ func HelloPacketFromBytes(in []byte) *HelloPacket {
 	idx++
 
 	for i := uint8(0); i < numBidirectional; i++ {
-		bidirectionalLinks[i] = ManetAddr(bytesToUint16(in[idx:idx+2]))
+		bidirectionalLinks[i] = ManetAddr(bytesToUint16(in[idx : idx+2]))
 		idx += 2
 	}
 
@@ -105,7 +105,7 @@ func HelloPacketFromBytes(in []byte) *HelloPacket {
 	idx++
 
 	for i := uint8(0); i < numHeard; i++ {
-		heardLinks[i] = ManetAddr(bytesToUint16(in[idx:idx+2]))
+		heardLinks[i] = ManetAddr(bytesToUint16(in[idx : idx+2]))
 		idx += 2
 	}
 
@@ -116,18 +116,18 @@ func HelloPacketFromBytes(in []byte) *HelloPacket {
 
 	for i := uint8(0); i < numMPR; i++ {
 		//fmt.Printf("Reading %d and %d\n", idx, idx+1)
-		mprLinks[i] = ManetAddr(bytesToUint16(in[idx:idx+2]))
+		mprLinks[i] = ManetAddr(bytesToUint16(in[idx : idx+2]))
 		idx += 2
 	}
 
 	return &HelloPacket{
-		Header: header,
-		NumBidirectional: numBidirectional,
+		Header:             header,
+		NumBidirectional:   numBidirectional,
 		BidirectionalLinks: bidirectionalLinks,
-		NumHeard: numHeard,
-		HeardLinks: heardLinks,
-		NumMPR: numMPR,
-		MPRLinks: mprLinks,
+		NumHeard:           numHeard,
+		HeardLinks:         heardLinks,
+		NumMPR:             numMPR,
+		MPRLinks:           mprLinks,
 	}
 }
 

@@ -81,9 +81,14 @@ func (c *ManetConnection) Receive() []byte {
 			}
 
 			if header.DestinationAddress == c.laddr {
+				fmt.Println("AT DEST!")
 				return buffer[:n]
-			} else if mpr, exists := neighborTable.Selectors[header.SourceAddress]; exists && mpr {
-				fmt.Printf("0x%04x: forwarding as MPR for 0x%04x\n", GetMyAddress(), header.SourceAddress)
+			} else if mpr, exists := neighborTable.Selectors[header.PreviousHop]; exists && mpr {
+				fmt.Printf("0x%04x: forwarding as MPR for 0x%04x\n", GetMyAddress(), header.PreviousHop)
+				fmt.Println("MY Table:")
+				for n, row := range neighborTable.Table {
+					fmt.Println(n, row.LinkType)
+				}
 				c.forward(buffer[:n])
 			}
 		}
@@ -101,8 +106,10 @@ func (c *ManetConnection) forward(bytes []byte) {
 	incomingHeader := data.PacketHeaderFromBytes(bytes)
 
 	cached := c.inCache(incomingHeader.SequenceNumber, incomingHeader.SendKey)
+	fmt.Println("CACHE: ", incomingHeader.SequenceNumber, incomingHeader.SendKey, cached)
 
 	if cached || incomingHeader.TTL <= 1 {
+		fmt.Println("DROP!")
 		return
 	}
 
@@ -117,7 +124,7 @@ func (c *ManetConnection) forward(bytes []byte) {
 		PacketType:         incomingHeader.PacketType,
 		SequenceNumber:     incomingHeader.SequenceNumber,
 		NumBytes:           incomingHeader.NumBytes,
-		SendKey:						incomingHeader.SendKey,
+		SendKey:            incomingHeader.SendKey,
 	}
 
 	for i, b := range outgoingHeader.ToBytes() {
@@ -129,6 +136,7 @@ func (c *ManetConnection) forward(bytes []byte) {
 			continue
 		}
 		raddr := ToUDPAddr(neighbor)
+		fmt.Println("FORWARD to", neighbor, "DEST: ", incomingHeader.DestinationAddress, "aka", raddr)
 		if _, err := c.conn.WriteToUDP(bytes, raddr); err != nil {
 			panic(err)
 		}
