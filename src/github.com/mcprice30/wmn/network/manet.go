@@ -1,6 +1,7 @@
 package network
 
 import (
+	"fmt"
 	"net"
 
 	"github.com/mcprice30/wmn/data"
@@ -20,11 +21,15 @@ type ManetConnection struct {
 // BindManet will instantiate a connection to the manet on the address specified
 // by this process's local address, as determined by SetMyAddress.
 func BindManet(conn *net.UDPConn) *ManetConnection {
-	return &ManetConnection{
+
+	out := &ManetConnection{
 		laddr: GetMyAddress(),
 		conn:  conn,
 		cache: map[uint16]uint16{},
 	}
+
+	go out.HelloLoop()
+	return out
 }
 
 // BindManet will instantiate a connection to the manet on the address specified
@@ -37,11 +42,7 @@ func CreateManet() *ManetConnection {
 		panic(err)
 	}
 
-	return &ManetConnection{
-		laddr: GetMyAddress(),
-		conn:  conn,
-		cache: map[uint16]uint16{},
-	}
+	return BindManet(conn)
 }
 
 // SetNeighbors will update all the neighbors of the given simulated manet node
@@ -53,8 +54,8 @@ func SetNeighbors(neighbors map[data.ManetAddr]float64) {
 // Send will attempt to transmit the given packet bytes over the manet, as
 // specified by the Connection interface.
 func (c *ManetConnection) Send(bytes []byte) {
-	for neighbor, dist := range myNeighbors {
-		if dropDistance(dist) {
+	for neighbor := range myNeighbors {
+		if dropManetChance() {
 			continue
 		}
 		raddr := ToUDPAddr(neighbor)
@@ -73,9 +74,16 @@ func (c *ManetConnection) Receive() []byte {
 			panic(err)
 		} else {
 			header := data.PacketHeaderFromBytes(buffer[:n])
+
+			if header.PacketType == data.PacketTypeHello {
+				handleHelloPacket(buffer[:n])
+				continue
+			}
+
 			if header.DestinationAddress == c.laddr {
 				return buffer[:n]
-			} else {
+			} else if mpr, exists := neighborTable.Selectors[header.SourceAddress]; exists && mpr {
+				fmt.Println("Forwarding as MPR!")
 				c.forward(buffer[:n])
 			}
 		}
@@ -109,14 +117,15 @@ func (c *ManetConnection) forward(bytes []byte) {
 		PacketType:         incomingHeader.PacketType,
 		SequenceNumber:     incomingHeader.SequenceNumber,
 		NumBytes:           incomingHeader.NumBytes,
+		SendKey:						incomingHeader.SendKey,
 	}
 
 	for i, b := range outgoingHeader.ToBytes() {
 		bytes[i] = b
 	}
 
-	for neighbor, dist := range myNeighbors {
-		if neighbor == incomingHeader.PreviousHop || dropDistance(dist) {
+	for neighbor := range myNeighbors {
+		if neighbor == incomingHeader.PreviousHop {
 			continue
 		}
 		raddr := ToUDPAddr(neighbor)

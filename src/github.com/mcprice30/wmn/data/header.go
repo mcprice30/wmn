@@ -2,6 +2,8 @@ package data
 
 type ManetAddr uint16
 
+const BroadcastAddress ManetAddr = 0xFFFF
+
 // MaxPacketBytes indicates the maximum number of bytes that can be sent in
 // a packet.
 const MaxPacketBytes = 128
@@ -23,7 +25,7 @@ const PacketTypeAck = 1
 
 // PacketTypeControl indicates that the given packet is a control packet used
 // in diagnosing or providing more information about the network.
-const PacketTypeControl = 2
+const PacketTypeHello = 2
 
 // PacketHeader represents the header of a packet to be sent across the network.
 // This header will be used at both the transport and network layers.

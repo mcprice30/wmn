@@ -52,4 +52,15 @@ func updateErrorInfo(fn string) {
 		fmt.Printf("New error rate: %f%%\n", errorPct*100.0)
 		network.SetDropChance(errorPct)
 	}
+	scanner.Scan()
+	line = scanner.Text()
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error:", err)
+	}
+	if errorPct, err := strconv.ParseFloat(line, 64); err != nil {
+		fmt.Println("Cannot get manet error percentage: ", err)
+	} else {
+		fmt.Printf("New manet error rate: %f%%\n", errorPct*100.0)
+		network.SetManetDropChance(errorPct)
+	}
 }
