@@ -100,28 +100,32 @@ func ChangeLines(lines []*Line) {
 }
 
 func SaveLines(fn string, lines []*Line) {
-	file, err := os.Open(fn)
-	if err != nil {
+  file, err := os.OpenFile(fn, os.O_WRONLY, 0755)
+  if err != nil {
+    panic(err)
+  }
+  defer file.Close()
+
+  writer := bufio.NewWriter(file)
+  for _, line := range lines {
+    write := fmt.Sprintf("%s\n", line)
+    fmt.Printf("Writing to %s %s", fn, write)
+    _, err := writer.WriteString(write)
+    if err != nil {
+      panic(err)
+    }
+  }
+  if err := writer.Flush(); err != nil {
 		panic(err)
 	}
-	defer file.Close()
-
-	writer := bufio.NewWriter(file)
-	for _, line := range lines {
-		_, err := writer.WriteString(fmt.Sprintf("%s\n", line))
-		if err != nil {
-			panic(err)
-		}
-	}
-	writer.Flush()
 }
 
 func main() {
-	ticker := time.NewTicker(10 * time.Second)
-	for {
-		<-ticker.C
-		lines := ReadLines("config.txt")
-		ChangeLines(lines)
-		SaveLines("config.txt", lines)
-	}
+  ticker := time.NewTicker(10 * time.Second)
+  for {
+    <- ticker.C
+    lines := ReadLines("config.txt")
+    ChangeLines(lines)
+    SaveLines("config.txt", lines)
+  }
 }
