@@ -83,7 +83,7 @@ func (c *ManetConnection) Receive() []byte {
 			if header.DestinationAddress == c.laddr {
 				return buffer[:n]
 			} else if mpr, exists := neighborTable.Selectors[header.SourceAddress]; exists && mpr {
-				fmt.Println("Forwarding as MPR!")
+				fmt.Printf("0x%04x: forwarding as MPR for 0x%04x\n", GetMyAddress(), header.SourceAddress)
 				c.forward(buffer[:n])
 			}
 		}

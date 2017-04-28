@@ -15,7 +15,7 @@ export GOROOT:=$(GROOT)
 .PHONY: sensor_hub all fmt packages display_hub manet_node data_source config
 
 # All will compile all packages and binaries.
-all: packages sensor_hub display_hub manet_node data_source
+all: packages sensor_hub display_hub manet_node data_source mobility
 
 # Packages separately compiles each package
 packages:
@@ -38,6 +38,9 @@ manet_node:
 
 data_source:
 	$(GO) build -o bin/data_source data_source.go
+
+mobility:
+	$(GO) build -o bin/mobility mobility.go
 
 # Format all go code
 fmt:
@@ -84,12 +87,18 @@ start_demo:
 	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config.txt Node11' &
 	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config.txt Node12' &
 	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config.txt Node13' &
+	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config.txt Node14' &
+	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config.txt Node15' &
+	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config.txt Node16' &
+	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config.txt Node17' &
+	ssh mcp0038@tux205 'cd Lab2/wmn && bin/manet_node config.txt Node18' &
 	ssh mcp0038@tux205 'cd Lab2/wmn && bin/display_hub config.txt error.txt Display 10109' &
 	bin/sensor_hub config.txt error.txt Sensor 10100 &
 	bin/data_source heartrate 10108 10100 &
 	bin/data_source location 10107 10100 &
 	bin/data_source oxygen 10106 10100 &
 	bin/data_source gas 10105 10100 &
+	#bin/mobility
 
 kill:
 	killall $$(ls bin)
